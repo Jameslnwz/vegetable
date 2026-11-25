@@ -5,30 +5,30 @@
  * hyacinth violet for the one accent that matters, a sun-yellow dot for the flower.
  */
 :root {
-  --paper: #f4efe3;
-  --paper-deep: #ebe3d0;
-  --ink: #1e2b2e;
-  --ink-soft: #364648; /* ~9:1 on paper, thin Thai strokes need the extra weight */
-  --teal: #1f5c63;
-  --teal-wash: #d6e6e1;
-  --violet: #6b4c9a;
-  --violet-wash: #e7dff2;
-  --sun: #e0b23a;
-  --line: #c9bfa6;
-  --danger: #8a3b2e;
+  /* Clean white canvas with pastel cards; deep forest-green owns the problem band */
+  --paper: #ffffff;
+  --paper-deep: #f6f4ef;
+  --ink: #17231f;
+  --ink-soft: #3c4a46; /* ~9:1 on white, thin Thai strokes need the extra weight */
+  --teal: #146b5c;
+  --teal-wash: #e1f2ec;
+  --violet: #6646c4;
+  --violet-wash: #efe9fc;
+  --sun: #f5c542;
+  --line: #e4e0d6;
+  --danger: #a33a2a;
 
-  /* Bands: the deep water colour owns one region; leaf and sun tint the rest */
-  --teal-deep: #154247;
-  --on-deep: #f4efe3;
-  --on-deep-soft: #bcd6cf; /* ~7:1 on teal-deep */
-  --leaf: #4d7a3c;
-  --leaf-wash: #e2edd8;
-  --sun-wash: #f6ead0;
+  --teal-deep: #10241f;
+  --on-deep: #f7f5ef;
+  --on-deep-soft: #c4d6cf; /* ~10:1 on teal-deep */
+  --leaf: #2f7a4a;
+  --leaf-wash: #e3f4ea;
+  --sun-wash: #fdf4cf;
   --sun-ink: #7a5a10;
-  --violet-band: #ece5f3;
-  --water-1: #a9cfc7;
-  --water-2: #5f9a97;
-  --water-3: #1f5c63;
+  --violet-band: #f6f2fd;
+  --water-1: #a9d3c8;
+  --water-2: #4f9a8c;
+  --water-3: #14564b;
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -77,9 +77,6 @@ html {
 
 body {
   background-color: var(--paper);
-  /* field-notebook dot grid, barely there */
-  background-image: radial-gradient(rgb(30 43 46 / 0.07) 1px, transparent 1.2px);
-  background-size: 28px 28px;
   color: var(--ink);
   font-family: var(--font-sans);
   font-size: 1.4rem;
@@ -390,6 +387,68 @@ a.press {
   transition-property: color, background-color, border-color, transform, box-shadow;
   transition-duration: 200ms;
   transition-timing-function: var(--ease-out);
+}
+
+/* ---------- Photos ---------- */
+@keyframes kenburns {
+  from {
+    transform: scale(1.12);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.kenburns {
+  animation: kenburns 2.6s var(--ease-out) both;
+}
+
+/* Hover moves the image inside its frame, never the frame itself */
+.photo-frame img {
+  transition: transform 700ms var(--ease-out);
+}
+
+.photo-frame:hover img,
+.photo-frame:focus-visible img {
+  transform: scale(1.05);
+}
+
+.banner-photo img {
+  transition: transform 1800ms var(--ease-out);
+}
+
+.reveal-pending .banner-photo img {
+  transform: scale(1.12);
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+dialog.lightbox[open] {
+  animation: dialog-in 320ms var(--ease-out);
+}
+
+dialog.lightbox::backdrop {
+  background: rgb(10 20 17 / 0.78);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kenburns,
+  dialog.lightbox[open] {
+    animation: none;
+  }
+  .photo-frame img,
+  .banner-photo img {
+    transition: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

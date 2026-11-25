@@ -43,26 +43,33 @@ export default function ChapterNav() {
 
   return (
     <div className="sticky top-0 z-30 border-b border-line bg-paper/95">
-      <nav
-        aria-label="หัวข้อในหน้า"
-        className="mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-4 py-2 sm:px-6"
-      >
-        <a href="#top" className="mr-3 shrink-0 text-lg font-extrabold text-ink">
+      <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-2 sm:px-6">
+        <a href="#top" className="flex shrink-0 items-center gap-2.5 text-xl font-bold text-ink">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet text-paper" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <ellipse cx="12" cy="7" rx="3" ry="4.5" />
+              <ellipse cx="7" cy="11" rx="3" ry="4.5" transform="rotate(-60 7 11)" />
+              <ellipse cx="17" cy="11" rx="3" ry="4.5" transform="rotate(60 17 11)" />
+              <rect x="11" y="12" width="2" height="9" rx="1" />
+            </svg>
+          </span>
           Vegetable
         </a>
-        {chapters.map((c) => (
-          <a
-            key={c.id}
-            href={`#${c.id}`}
-            aria-current={active === c.id ? "true" : undefined}
-            className={`flex min-h-11 shrink-0 items-center rounded-full px-3 text-base transition-colors duration-200 ${
-              active === c.id ? "bg-teal text-paper" : "text-ink-soft hover:text-teal"
-            }`}
-          >
-            {c.label}
-          </a>
-        ))}
-      </nav>
+        <nav aria-label="หัวข้อในหน้า" className="ml-auto flex items-center gap-1 overflow-x-auto">
+          {chapters.map((c) => (
+            <a
+              key={c.id}
+              href={`#${c.id}`}
+              aria-current={active === c.id ? "true" : undefined}
+              className={`flex min-h-11 shrink-0 items-center rounded-full px-3 text-lg transition-colors duration-200 ${
+                active === c.id ? "bg-violet-wash font-bold text-violet" : "text-ink-soft hover:text-violet"
+              }`}
+            >
+              {c.label}
+            </a>
+          ))}
+        </nav>
+      </div>
       <div className="h-0.5">
         <div className="h-full origin-left bg-violet" style={{ transform: `scaleX(${progress})` }} />
       </div>

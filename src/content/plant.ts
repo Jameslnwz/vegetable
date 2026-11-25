@@ -18,7 +18,8 @@ export const quickFacts = [
 ];
 
 export const identity: { label: string; value: string | null; italic?: boolean; note?: string }[] = [
-  { label: "รหัสพรรณไม้", value: null, note: "รอรหัสจากงานสวนพฤกษศาสตร์" },
+  { label: "ชื่อผลงาน", value: "Vegetable" },
+  { label: "รหัสพรรณไม้", value: "7-65000-001-250", note: "จากป้ายในสวนพฤกษศาสตร์โรงเรียน" },
   {
     label: "ชื่อวิทยาศาสตร์",
     value: "Pontederia crassipes Mart.",
@@ -399,5 +400,10 @@ export const sources = [
   "Thai PBS: งบประมาณกำจัดผักตบชวาของจังหวัดต่าง ๆ (ปีงบ 2558–2568)",
   "สยามรัฐ: พิษณุโลกกำจัดผักตบชวาที่คลองหนองเหล็ก (มิ.ย. 2569)",
   "ข้อมูลชีววิทยา: Flora of North America; IUCN GISD; CABI; EPPO (2008); Barrett (1977, 1979, 1980); Barrett & Forno (1982); Penfound & Earle (1948); Zhang, Zhang & Barrett (2010) Molecular Ecology; Obeid & Tag el Seed (1976); Cook (1998); Bergianska Trädgården (Angiosperm Morphology)",
-  "ภาพวาดประกอบและแอนิเมชัน: สร้างด้วย SVG",
+  "ภาพวาดประกอบและแอนิเมชัน: สร้างด้วย SVG โดยคณะผู้จัดทำ",
 ];
+
+export const banner = {
+  title: "วัชพืชที่ขวางลำน้ำ คือวัตถุดิบฟรีของชุมชน",
+  text: "เก็บผักตบชวาขึ้นมาแปรรูป ช่วยให้น้ำไหลสะดวก และได้วัตถุดิบไปทำปุ๋ย งานจักสาน และกระถางเพาะกล้า",
+};
