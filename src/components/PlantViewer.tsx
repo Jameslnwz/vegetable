@@ -158,7 +158,7 @@ export default function PlantViewer() {
                       x={p.label.x}
                       y={p.label.y}
                       textAnchor={p.label.anchorSide === "start" ? "start" : "end"}
-                      fontSize="20"
+                      fontSize="25"
                       fontFamily="var(--font-body)"
                       fill="var(--ink)"
                       stroke="var(--paper-deep)"

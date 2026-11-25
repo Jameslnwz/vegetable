@@ -38,7 +38,7 @@ export default function Tristyly() {
         {(Object.keys(LEVEL_Y) as Level[]).map((lv) => (
           <g key={lv}>
             <line x1="70" x2="590" y1={LEVEL_Y[lv]} y2={LEVEL_Y[lv]} stroke={LEVEL_COLOR[lv]} strokeDasharray="3 6" opacity="0.45" />
-            <text x="0" y={LEVEL_Y[lv] + 6} fontSize="16" fill={LEVEL_COLOR[lv]} fontWeight="600">
+            <text x="0" y={LEVEL_Y[lv] + 6} fontSize="21" fill={LEVEL_COLOR[lv]} fontWeight="600">
               {LEVEL_NAME[lv].replace("ระดับ", "")}
             </text>
           </g>
@@ -121,7 +121,7 @@ function Flower({ morph, x }: { morph: Morph; x: number }) {
           <ellipse cx={x + 18} cy={LEVEL_Y[lv]} rx="6" ry="9" fill={LEVEL_COLOR[lv]} />
         </g>
       ))}
-      <text x={x} y="284" textAnchor="middle" fontSize="17" fontWeight="700" fill="var(--ink)">
+      <text x={x} y="284" textAnchor="middle" fontSize="22" fontWeight="700" fill="var(--ink)">
         {m.name}
       </text>
     </g>

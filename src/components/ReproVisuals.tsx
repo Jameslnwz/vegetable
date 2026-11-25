@@ -19,7 +19,7 @@ const C = {
 
 function Label({ x, y, children, anchor = "middle" }: { x: number; y: number; children: string; anchor?: "start" | "middle" | "end" }) {
   return (
-    <text x={x} y={y} textAnchor={anchor} fontSize="15" fill={C.text} stroke="var(--paper)" strokeWidth="4" paintOrder="stroke">
+    <text x={x} y={y} textAnchor={anchor} fontSize="19" fill={C.text} stroke="var(--paper)" strokeWidth="4" paintOrder="stroke">
       {children}
     </text>
   );
