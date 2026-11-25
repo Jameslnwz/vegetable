@@ -57,7 +57,7 @@ export default function Cover({ plantCode }: { plantCode: string }) {
           className="-z-10 object-cover object-[50%_18%]"
         />
         <div
-          className="absolute inset-0 -z-10 bg-[linear-gradient(to_top,rgb(12_10_30/0.92)_0%,rgb(12_10_30/0.62)_38%,rgb(12_10_30/0.08)_70%),linear-gradient(to_right,rgb(12_10_30/0.45),transparent_60%)]"
+          className="absolute inset-0 -z-10 bg-[linear-gradient(to_top,rgb(12_10_30/0.85)_0%,rgb(12_10_30/0.35)_45%,rgb(12_10_30/0)_70%)]"
           aria-hidden="true"
         />
 
