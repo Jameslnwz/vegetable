@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRef } from "react";
 import { photos, type Photo, type PhotoKey } from "@/content/photos";
 
-// รูปถ่ายแบบนิตยสาร: กดเพื่อดูรูปใหญ่พร้อมเครดิต
+// รูปถ่ายขอบมน: กดเพื่อดูรูปใหญ่พร้อมเครดิต
 // caption="below" วางคำบรรยายใต้รูป (ค่าเริ่มต้น), "overlay" วางบนรูป
 export default function PhotoTile({
   id,
@@ -12,7 +12,6 @@ export default function PhotoTile({
   frameClassName = "aspect-[4/3]",
   sizes = "(min-width: 1024px) 30vw, 100vw",
   caption = "below",
-  parallax = false,
   tone = "paper",
 }: {
   id: PhotoKey;
@@ -20,7 +19,6 @@ export default function PhotoTile({
   frameClassName?: string;
   sizes?: string;
   caption?: "below" | "overlay" | "none";
-  parallax?: boolean;
   tone?: "paper" | "forest";
 }) {
   const photo: Photo = photos[id];
@@ -28,23 +26,21 @@ export default function PhotoTile({
   const credit = photo.credit ? `ภาพ: ${photo.credit.author} (${photo.credit.license})` : "ภาพ: คณะผู้จัดทำ";
 
   return (
-    <figure className={className}>
+    <figure className={`h-full ${className}`}>
       <button
         type="button"
         onClick={() => dialogRef.current?.showModal()}
-        className={`photo-frame group relative block w-full cursor-zoom-in overflow-hidden rounded-2xl bg-paper-deep text-left ${
-          parallax ? "parallax" : ""
-        } ${frameClassName}`}
+        className={`photo-frame group relative block w-full cursor-zoom-in overflow-hidden rounded-[1.5rem] bg-paper-deep text-left ${frameClassName}`}
         aria-label={`ดูรูปขนาดใหญ่: ${photo.caption}`}
       >
         <Image src={photo.src} alt={photo.alt} fill sizes={sizes} placeholder="blur" className="object-cover" />
         {caption === "overlay" && (
-          <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-4 pb-3 pt-12 text-base leading-snug text-white">
+          <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[rgb(12_10_30/0.85)] via-[rgb(12_10_30/0.45)] to-transparent px-4 pb-3 pt-12 text-sm leading-snug text-white sm:text-base">
             {photo.caption}
           </span>
         )}
         <span
-          className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-black/45 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100"
+          className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-ink opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100"
           aria-hidden="true"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -62,38 +58,38 @@ export default function PhotoTile({
 
       <dialog
         ref={dialogRef}
-        className="lightbox m-auto w-[min(92vw,1100px)] overflow-hidden rounded-3xl bg-paper p-0 text-ink"
+        className="lightbox m-auto w-[min(92vw,1100px)] overflow-hidden rounded-[2rem] bg-white p-0 text-ink"
         aria-label={photo.caption}
         onClick={(e) => {
           if (e.target === dialogRef.current) dialogRef.current?.close();
         }}
       >
-        <div className="relative bg-black">
+        <div className="relative bg-ink">
           <Image src={photo.src} alt={photo.alt} sizes="92vw" placeholder="blur" className="max-h-[75vh] w-full object-contain" />
           <form method="dialog">
             <button
               type="submit"
-              className="absolute right-3 top-3 flex min-h-11 items-center rounded-full bg-paper px-5 text-base font-semibold text-ink shadow-lg hover:bg-sun"
+              className="absolute right-3 top-3 flex min-h-11 items-center rounded-full bg-sun px-5 text-base font-bold text-ink shadow-[var(--shadow-sticker)] hover:bg-white"
             >
               ปิด
             </button>
           </form>
         </div>
         <div className="p-5">
-          <p className="font-serif text-xl font-bold">{photo.caption}</p>
+          <p className="text-xl font-bold">{photo.caption}</p>
           <p className="mt-1 text-base text-ink-soft">
             {photo.credit ? (
               <>
                 ภาพ: {photo.credit.author} ·{" "}
                 {photo.credit.licenseUrl ? (
-                  <a href={photo.credit.licenseUrl} className="underline" target="_blank" rel="noreferrer">
+                  <a href={photo.credit.licenseUrl} className="underline decoration-violet/40 hover:text-violet" target="_blank" rel="noreferrer">
                     {photo.credit.license}
                   </a>
                 ) : (
                   photo.credit.license
                 )}{" "}
                 ·{" "}
-                <a href={photo.credit.fileUrl} className="underline" target="_blank" rel="noreferrer">
+                <a href={photo.credit.fileUrl} className="underline decoration-violet/40 hover:text-violet" target="_blank" rel="noreferrer">
                   Wikimedia Commons
                 </a>
               </>

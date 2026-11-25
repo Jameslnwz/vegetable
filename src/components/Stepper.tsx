@@ -31,7 +31,7 @@ export default function Stepper({
 
   return (
     <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-center">
-      <div className="rounded-xl bg-paper p-2">{visual(step)}</div>
+      <div className="rounded-2xl bg-white p-2">{visual(step)}</div>
       <div>
         <ol className="flex gap-1.5" aria-label="ขั้นตอน">
           {steps.map((s, i) => (

@@ -24,10 +24,10 @@ export function PillButton({
       disabled={disabled}
       aria-pressed={pressed}
       aria-label={label}
-      className={`inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full px-4 text-base font-medium transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-40 ${
+      className={`inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full px-4 text-base font-semibold transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-40 ${
         active
-          ? "bg-teal text-paper hover:bg-ink"
-          : "border border-line bg-paper text-ink hover:border-teal hover:text-teal"
+          ? "bg-violet text-white hover:bg-ink"
+          : "border-2 border-line bg-white text-ink hover:border-violet hover:text-violet"
       }`}
     >
       {children}

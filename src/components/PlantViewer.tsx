@@ -87,7 +87,7 @@ export default function PlantViewer() {
               <Plantlet cx={556} cy={318} />
 
               {/* ราก */}
-              <g fill="none" stroke="#3d2f4a" strokeWidth="2" strokeLinecap="round" opacity="0.85">
+              <g fill="none" stroke="var(--shape-root)" strokeWidth="2" strokeLinecap="round" opacity="0.85">
                 <path d="M300 304 C 290 340, 272 370, 282 420" />
                 <path d="M300 304 C 300 350, 310 390, 298 440" />
                 <path d="M300 304 C 312 340, 330 380, 322 430" />
@@ -98,37 +98,37 @@ export default function PlantViewer() {
               </g>
 
               {/* ก้านใบพอง (ทุ่น) */}
-              <g fill="var(--teal-wash)" stroke="var(--teal)" strokeWidth="2.5" className="anim-bob">
+              <g fill="var(--shape-float)" className="anim-bob">
                 <ellipse cx="230" cy="262" rx="12" ry="34" transform="rotate(-18 230 262)" />
                 <ellipse cx="300" cy="256" rx="13" ry="38" />
                 <ellipse cx="368" cy="262" rx="12" ry="34" transform="rotate(18 368 262)" />
               </g>
 
               {/* แผ่นใบ */}
-              <g fill="#7f9f6a" stroke="#4d6b3c" strokeWidth="2">
+              <g fill="var(--shape-leaf)">
                 <ellipse cx="200" cy="198" rx="62" ry="30" transform="rotate(-28 200 198)" />
                 <ellipse cx="420" cy="198" rx="62" ry="30" transform="rotate(28 420 198)" />
                 <ellipse cx="310" cy="172" rx="70" ry="32" />
               </g>
-              <g fill="none" stroke="#4d6b3c" strokeWidth="1.5" strokeLinecap="round" opacity="0.6">
+              <g fill="none" stroke="var(--shape-stem)" strokeWidth="1.5" strokeLinecap="round" opacity="0.6">
                 <path d="M310 172 L310 206" />
                 <path d="M200 198 L240 186" />
                 <path d="M420 198 L380 186" />
               </g>
 
               {/* ช่อดอก */}
-              <path d="M310 172 C 318 130, 330 100, 360 74" fill="none" stroke="#4d6b3c" strokeWidth="4" strokeLinecap="round" />
+              <path d="M310 172 C 318 130, 330 100, 360 74" fill="none" stroke="var(--shape-stem)" strokeWidth="4" strokeLinecap="round" />
               <g className="anim-bob" fill="var(--violet)" stroke="var(--violet)" strokeWidth="1.5">
                 <circle cx="342" cy="104" r="11" />
                 <circle cx="372" cy="90" r="11" />
                 <circle cx="356" cy="70" r="10" />
-                <circle cx="330" cy="130" r="9" fill="#8d6cba" />
+                <circle cx="330" cy="130" r="9" fill="var(--shape-petal-2)" />
               </g>
               <circle cx="356" cy="76" r="3.5" fill="var(--sun)" />
 
               {/* ผลแคปซูล */}
-              <path d="M330 206 Q 430 190 500 228" fill="none" stroke="#4d6b3c" strokeWidth="3" strokeLinecap="round" />
-              <ellipse cx="548" cy="234" rx="14" ry="22" transform="rotate(-30 548 234)" fill="#8a6a3f" stroke="#5a4325" strokeWidth="2" />
+              <path d="M330 206 Q 430 190 500 228" fill="none" stroke="var(--shape-stem)" strokeWidth="3" strokeLinecap="round" />
+              <ellipse cx="548" cy="234" rx="14" ry="22" transform="rotate(-30 548 234)" fill="var(--shape-fruit)" />
 
               {/* จุดกด (hotspot) */}
               {parts.map((p) => (
@@ -240,7 +240,7 @@ function Water() {
 
 function Plantlet({ cx, cy }: { cx: number; cy: number }) {
   return (
-    <g className="anim-rise" fill="#7f9f6a" stroke="#4d6b3c" strokeWidth="2">
+    <g className="anim-rise" fill="var(--shape-leaf-deep)">
       <ellipse cx={cx - 14} cy={cy - 10} rx="18" ry="9" transform={`rotate(-30 ${cx - 14} ${cy - 10})`} />
       <ellipse cx={cx + 12} cy={cy - 12} rx="18" ry="9" transform={`rotate(30 ${cx + 12} ${cy - 12})`} />
       <ellipse cx={cx} cy={cy - 2} rx="20" ry="10" />

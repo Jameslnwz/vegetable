@@ -6,7 +6,8 @@ import { PillButton } from "./ui";
 
 type Level = "high" | "mid" | "low";
 const LEVEL_Y: Record<Level, number> = { high: 60, mid: 130, low: 200 };
-const LEVEL_COLOR: Record<Level, string> = { high: "#6b4c9a", mid: "#3f7a4a", low: "#b8642a" };
+const LEVEL_COLOR: Record<Level, string> = { high: "var(--cell-tube)", mid: "var(--cell-anti)", low: "var(--cell-polar)" };
+const LEVEL_INK: Record<Level, string> = { high: "var(--violet)", mid: "var(--green-ink)", low: "var(--orange-ink)" };
 const LEVEL_NAME: Record<Level, string> = { high: "ระดับสูง", mid: "ระดับกลาง", low: "ระดับต่ำ" };
 const ORDER: Morph[] = ["L", "M", "S"];
 
@@ -17,7 +18,7 @@ export default function Tristyly() {
   const shown = view === "all" ? ORDER : [view];
 
   return (
-    <div className="rounded-2xl border border-line bg-paper-deep p-4 sm:p-6">
+    <div className="rounded-[1.75rem] bg-paper-deep p-4 sm:p-6">
       <div className="flex flex-wrap gap-2" role="group" aria-label="เลือกแบบดอก">
         <PillButton pressed={view === "all"} onClick={() => setView("all")}>
           ทั้ง 3 แบบ
@@ -38,7 +39,7 @@ export default function Tristyly() {
         {(Object.keys(LEVEL_Y) as Level[]).map((lv) => (
           <g key={lv}>
             <line x1="70" x2="590" y1={LEVEL_Y[lv]} y2={LEVEL_Y[lv]} stroke={LEVEL_COLOR[lv]} strokeDasharray="3 6" opacity="0.45" />
-            <text x="0" y={LEVEL_Y[lv] + 6} fontSize="21" fill={LEVEL_COLOR[lv]} fontWeight="600">
+            <text x="0" y={LEVEL_Y[lv] + 6} fontSize="21" fill={LEVEL_INK[lv]} fontWeight="700">
               {LEVEL_NAME[lv].replace("ระดับ", "")}
             </text>
           </g>
@@ -88,7 +89,7 @@ export default function Tristyly() {
               <strong className="text-ink">
                 {morphs[view].name}: {morphs[view].sub}
               </strong>{" "}
-              <span className="ml-1 rounded-full bg-violet-wash px-3 py-0.5 text-base text-violet">{morphs[view].found}</span>
+              <span className="ml-1 rounded-full bg-violet px-3 py-0.5 text-base font-semibold text-white">{morphs[view].found}</span>
             </p>
             <p className="text-lg text-ink">{morphs[view].text}</p>
           </>
@@ -109,15 +110,15 @@ function Flower({ morph, x }: { morph: Morph; x: number }) {
   return (
     <g className="flower-col">
       {/* รังไข่ */}
-      <ellipse cx={x} cy="250" rx="22" ry="16" fill="#cfe0c4" stroke="#4d6b3c" strokeWidth="2" />
+      <ellipse cx={x} cy="250" rx="22" ry="16" fill="var(--shape-leaf-wash)" stroke="var(--shape-stem)" strokeWidth="2" />
       {/* ก้านเกสรเพศเมีย */}
-      <line x1={x} x2={x} y1="236" y2={sy + 8} stroke="#4d6b3c" strokeWidth="3" />
+      <line x1={x} x2={x} y1="236" y2={sy + 8} stroke="var(--shape-stem)" strokeWidth="3" />
       {/* ยอดเกสรเพศเมีย */}
-      <circle cx={x} cy={sy} r="9" fill="#fff" stroke={LEVEL_COLOR[m.stigma]} strokeWidth="4" />
+      <circle cx={x} cy={sy} r="9" fill="#ffffff" stroke={LEVEL_COLOR[m.stigma]} strokeWidth="4" />
       {/* อับเรณู 2 ชุด */}
       {m.anthers.map((lv) => (
         <g key={lv}>
-          <line x1={x + 4} x2={x + 18} y1="236" y2={LEVEL_Y[lv] + 6} stroke="#8a7a5a" strokeWidth="1.5" />
+          <line x1={x + 4} x2={x + 18} y1="236" y2={LEVEL_Y[lv] + 6} stroke="var(--cell-edge)" strokeWidth="1.5" />
           <ellipse cx={x + 18} cy={LEVEL_Y[lv]} rx="6" ry="9" fill={LEVEL_COLOR[lv]} />
         </g>
       ))}

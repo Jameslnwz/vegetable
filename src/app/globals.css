@@ -1,48 +1,104 @@
 @import "tailwindcss";
 
 /*
- * Editorial nature magazine.
- * Warm paper for reading, a deep forest ground for features, hyacinth violet as the
- * one accent that marks interaction and data, a highlighter yellow used sparingly.
+ * Vegetable: a field guide you want to poke.
+ * White page and plain cards for reading; one saturated colour per topic;
+ * flat cut-paper shapes of the plant's own parts that wobble when touched.
+ * Every text/ground pair below was checked for WCAG AA.
  */
 :root {
-  --paper: #faf8f3;
-  --paper-deep: #f1ede3;
-  --ink: #121815;
-  --ink-soft: #46514c; /* 7.6:1 on paper */
-  --line: #e0dacb;
+  /* grounds and ink */
+  --paper: #ffffff;
+  --paper-deep: #f5f3fb;
+  --lilac: #f6f2ff;
+  --ink: #14112a;
+  --ink-soft: #4a4563; /* 9.0:1 on white, 8.2:1 on lilac */
+  --line: #e5e1ef;
 
-  --forest: #0e2a21;
-  --forest-2: #163a2e;
-  --on-forest: #f4f1e8;
-  --on-forest-soft: #b9cbc2; /* 8.9:1 on forest */
+  /* dark lagoon (problem section, footer scene) */
+  --forest: #10302a;
+  --forest-2: #17413a;
+  --on-forest: #f3fbf8;
+  --on-forest-soft: #b5d3ca; /* 8.9:1 on forest */
 
-  --teal: #14634f;
-  --teal-wash: #e0efe8;
-  --violet: #6646c4;
-  --violet-wash: #eee8fb;
-  --violet-band: #f5f1fc;
-  --sun: #f2c230;
-  --sun-wash: #fbf1cd;
-  --sun-ink: #6e5208;
-  --leaf: #2f7a4a;
-  --leaf-wash: #e3f1e7;
-  --danger: #a33a2a;
+  /* topic colours: fill / wash / ink-on-white */
+  --violet: #5b2fd0; /* white text 7.6:1 */
+  --violet-bright: #7a5af8;
+  --violet-wash: #efe9ff;
+  --violet-band: #f6f2ff;
+  --teal: #0c7f74; /* white text 4.9:1 */
+  --teal-ink: #0a6e65;
+  --teal-wash: #dcf5f1;
+  --sun: #ffd23f; /* ink text 12.7:1 */
+  --sun-wash: #fff4c7;
+  --sun-ink: #7a5600;
+  --lime: #a5e635; /* ink text 12.2:1 */
+  --lime-wash: #edfad6;
+  --green-ink: #1a7f4b;
+  --pink: #ff4f8b; /* ink text 5.9:1 */
+  --pink-wash: #ffe6ef;
+  --pink-ink: #c2185b;
+  --orange: #ff8a1f; /* ink text 7.8:1 */
+  --orange-wash: #fff0e0;
+  --orange-ink: #a14a00;
+  --aqua: #48d6cc;
+  --danger: #c0262d;
+  --danger-wash: #fdeaea;
 
-  /* aliases kept for the interactive components */
+  /* cut-paper shapes (decoration and diagrams) */
+  --shape-leaf: #8fd43a;
+  --shape-leaf-2: #b6ea4f;
+  --shape-leaf-deep: #5fb02a;
+  --shape-leaf-wash: #dff5c4;
+  --shape-leaf-wash-2: #eefadf;
+  --shape-stem: #3f8f1f;
+  --shape-float: #7fe6dc;
+  --shape-float-2: #b4f3ec;
+  --shape-petal: #c3a9ff;
+  --shape-petal-2: #a585ff;
+  --shape-eye: #ffd23f;
+  --shape-heart: #5b2fd0;
+  --shape-root: #2b2350;
+  --shape-stolon: #ff6fa6;
+  --shape-water-1: #b9f0eb;
+  --shape-water-2: #48d6cc;
+  --shape-water-3: #0c9c90;
+  --shape-fruit: #c27a2c;
+  --shape-soil: #d8b48c;
+  --shape-soil-dark: #6b4426;
+  --shape-wilt: #a89cbc;
+
+  /* cells in the reproduction diagrams */
+  --cell-fill: #fff1d6;
+  --cell-pollen: #ffe19a;
+  --cell-sac: #fff8e8;
+  --cell-edge: #9a7b4f;
+  --cell-tube: #7a5af8;
+  --cell-gen: #ff4f8b;
+  --cell-egg: #d81b60;
+  --cell-polar: #ff8a1f;
+  --cell-anti: #1fa35f;
+  --cell-dead: #d6cfe3;
+  --cell-syn: #ffb3cd;
+
+  /* kept names used by the interactive components */
   --teal-deep: var(--forest);
   --on-deep: var(--on-forest);
   --on-deep-soft: var(--on-forest-soft);
-  --water-1: #a9d3c8;
-  --water-2: #4f9a8c;
-  --water-3: #14564b;
+  --water-1: var(--shape-water-1);
+  --water-2: var(--shape-water-2);
+  --water-3: var(--shape-water-3);
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --shadow-lift: 0 18px 40px -22px rgb(20 17 42 / 0.45);
+  --shadow-sticker: 0 6px 14px -6px rgb(20 17 42 / 0.45);
 }
 
 @theme inline {
   --color-paper: var(--paper);
   --color-paper-deep: var(--paper-deep);
+  --color-lilac: var(--lilac);
   --color-ink: var(--ink);
   --color-ink-soft: var(--ink-soft);
   --color-line: var(--line);
@@ -50,28 +106,41 @@
   --color-forest-2: var(--forest-2);
   --color-on-forest: var(--on-forest);
   --color-on-forest-soft: var(--on-forest-soft);
+  --color-violet: var(--violet);
+  --color-violet-bright: var(--violet-bright);
+  --color-violet-wash: var(--violet-wash);
+  --color-violet-band: var(--violet-band);
   --color-teal: var(--teal);
+  --color-teal-ink: var(--teal-ink);
   --color-teal-wash: var(--teal-wash);
   --color-teal-deep: var(--forest);
   --color-on-deep: var(--on-forest);
   --color-on-deep-soft: var(--on-forest-soft);
-  --color-violet: var(--violet);
-  --color-violet-wash: var(--violet-wash);
-  --color-violet-band: var(--violet-band);
   --color-sun: var(--sun);
   --color-sun-wash: var(--sun-wash);
   --color-sun-ink: var(--sun-ink);
-  --color-leaf: var(--leaf);
-  --color-leaf-wash: var(--leaf-wash);
+  --color-lime: var(--lime);
+  --color-lime-wash: var(--lime-wash);
+  --color-green-ink: var(--green-ink);
+  --color-pink: var(--pink);
+  --color-pink-wash: var(--pink-wash);
+  --color-pink-ink: var(--pink-ink);
+  --color-orange: var(--orange);
+  --color-orange-wash: var(--orange-wash);
+  --color-orange-ink: var(--orange-ink);
+  --color-aqua: var(--aqua);
   --color-danger: var(--danger);
+  --color-danger-wash: var(--danger-wash);
   --font-sans: var(--font-text), system-ui, sans-serif;
-  --font-serif: var(--font-display), Georgia, serif;
+  --font-display: var(--font-text), system-ui, sans-serif;
+  --font-sticker: var(--font-hand), var(--font-text), sans-serif;
 }
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 5rem;
-  scrollbar-color: var(--forest) var(--paper-deep);
+  scroll-padding-top: 5.5rem;
+  scrollbar-color: var(--violet) var(--paper-deep);
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -79,7 +148,8 @@ body {
   color: var(--ink);
   font-family: var(--font-sans);
   font-size: 1.125rem;
-  line-height: 1.8;
+  line-height: 1.75;
+  caret-color: var(--violet);
 }
 
 ::selection {
@@ -90,16 +160,23 @@ body {
 :focus-visible {
   outline: 3px solid var(--violet);
   outline-offset: 3px;
-  border-radius: 6px;
+  border-radius: 10px;
 }
 
+/* On dark or violet grounds the ring turns sun-yellow so it stays visible */
+.on-dark :focus-visible {
+  outline-color: var(--sun);
+}
+
+/* Thai stacks vowels and tone marks above the line: keep headings at 1.3 or more */
 h1,
 h2,
 h3,
 h4 {
   font-family: var(--font-display);
-  letter-spacing: -0.015em;
-  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
   text-wrap: balance;
 }
 
@@ -109,6 +186,7 @@ p {
 
 a {
   text-underline-offset: 0.22em;
+  text-decoration-thickness: 2px;
 }
 
 .tabular {
@@ -121,119 +199,143 @@ input[type="range"] {
   accent-color: var(--violet);
 }
 
-/* ---------- Headline: lines rise into place, the one authored entrance ---------- */
-@keyframes line-in {
-  from {
-    opacity: 0;
-    transform: translateY(0.55em);
-    filter: blur(8px);
+/* Yellow marker under a phrase */
+.marker {
+  background: linear-gradient(transparent 62%, var(--sun) 62%, var(--sun) 92%, transparent 92%);
+  padding-inline: 0.08em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* ---------- Cut-paper shapes: wobble when poked ---------- */
+@keyframes wobble {
+  0% {
+    transform: rotate(var(--r, 0deg)) scale(1);
   }
-  to {
-    opacity: 1;
-    transform: none;
-    filter: blur(0);
+  30% {
+    transform: rotate(calc(var(--r, 0deg) - 7deg)) scale(1.08, 0.94);
+  }
+  60% {
+    transform: rotate(calc(var(--r, 0deg) + 5deg)) scale(0.97, 1.04);
+  }
+  100% {
+    transform: rotate(var(--r, 0deg)) scale(1);
   }
 }
 
-.line-in {
+.paper {
   display: block;
-  animation: line-in 1100ms var(--ease-out) both;
-  animation-delay: calc(var(--l, 0) * 140ms + 250ms);
+  transform: rotate(var(--r, 0deg));
+  transform-origin: 50% 70%;
+  transition: transform 500ms var(--ease-spring);
+  filter: drop-shadow(0 10px 14px rgb(20 17 42 / 0.22));
 }
 
-@keyframes settle {
-  from {
-    transform: scale(1.14);
-  }
-  to {
-    transform: scale(1.02);
-  }
+.paper.flat {
+  filter: none;
 }
 
-.kenburns {
-  animation: settle 3.2s var(--ease-out) both;
+.paper.poke {
+  cursor: pointer;
+  touch-action: manipulation;
 }
 
-/* ---------- Photography: gentle scroll parallax where the browser supports it ---------- */
-@supports (animation-timeline: view()) {
-  .parallax img {
-    animation: parallax linear both;
-    animation-timeline: view();
-    animation-range: cover;
-  }
-
-  @keyframes parallax {
-    from {
-      transform: translateY(-7%) scale(1.16);
-    }
-    to {
-      transform: translateY(7%) scale(1.16);
-    }
+@media (hover: hover) {
+  .paper.poke:hover {
+    animation: wobble 650ms var(--ease-spring);
   }
 }
 
-.photo-frame img {
-  transition: transform 900ms var(--ease-out);
+.paper.poke.boing {
+  animation: wobble 650ms var(--ease-spring);
 }
 
-.photo-frame:hover img,
-.photo-frame:focus-visible img {
-  transform: scale(1.045);
-}
-
-.banner-photo img {
-  transition: transform 1800ms var(--ease-out);
-}
-
-.reveal-pending .banner-photo img {
-  transform: scale(1.12);
-}
-
-/* ---------- Marquee of local names ---------- */
-@keyframes marquee {
-  to {
-    transform: translateX(-50%);
+/* Slow float for buoyant shapes */
+@keyframes bob {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -6px;
   }
 }
 
-.marquee-track {
-  animation: marquee 48s linear infinite;
+.bob {
+  animation: bob 5.5s ease-in-out infinite;
+  animation-delay: var(--bob, 0s);
 }
 
-/* ---------- Reveal on scroll (only for content that starts below the fold) ---------- */
+/* Cover shapes follow the pointer a little, each at its own depth */
+.drift {
+  transform: translate(calc(var(--px, 0) * var(--depth, 10px)), calc(var(--py, 0) * var(--depth, 10px)));
+  transition: transform 700ms var(--ease-out);
+}
+
+/* Stickers: hand-lettered labels stuck on the graphics */
+.sticker {
+  display: inline-block;
+  font-family: var(--font-sticker);
+  font-weight: 600;
+  line-height: 1.45;
+  padding: 0.35em 0.85em 0.45em;
+  border-radius: 0.9em;
+  transform: rotate(var(--r, -4deg));
+  box-shadow: var(--shadow-sticker);
+  white-space: nowrap;
+}
+
+/* ---------- Reveal on scroll (content below the fold only, visible without JS) ---------- */
 .reveal-heading {
   transition:
-    opacity 800ms var(--ease-out),
-    transform 800ms var(--ease-out),
-    filter 800ms var(--ease-out);
+    opacity 700ms var(--ease-out),
+    transform 700ms var(--ease-out);
 }
 
 .reveal-pending .reveal-heading {
   opacity: 0;
-  transform: translateY(22px);
-  filter: blur(6px);
+  transform: translateY(18px);
 }
 
 [data-stagger] > * {
   transition:
-    opacity 650ms var(--ease-out),
-    transform 650ms var(--ease-out);
-  transition-delay: calc(var(--i, 0) * 80ms + 150ms);
+    opacity 600ms var(--ease-out),
+    transform 600ms var(--ease-spring);
+  transition-delay: calc(var(--i, 0) * 60ms + 120ms);
 }
 
 .reveal-pending [data-stagger] > * {
   opacity: 0;
-  transform: translateY(18px);
+  transform: translateY(16px) scale(0.98);
 }
 
-/* A rule that draws itself across the page when a feature opens */
-.rule-draw {
-  transform-origin: left;
-  transition: transform 1400ms var(--ease-out) 100ms;
+/* Shapes drop in like paper and settle with a small bounce */
+.drop-in {
+  transition:
+    opacity 500ms var(--ease-out),
+    translate 900ms var(--ease-spring);
+  transition-delay: var(--d, 0ms);
 }
 
-.reveal-pending .rule-draw {
-  transform: scaleX(0);
+.reveal-pending .drop-in {
+  opacity: 0;
+  translate: 0 -28px;
+}
+
+@keyframes cover-drop {
+  from {
+    opacity: 0;
+    translate: 0 -36px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+.cover-drop {
+  animation: cover-drop 900ms var(--ease-spring) both;
+  animation-delay: var(--d, 0ms);
 }
 
 /* Charts: the series line inks itself when first seen */
@@ -251,7 +353,7 @@ input[type="range"] {
   transform-origin: left;
   transform-box: fill-box;
   transition:
-    transform 1100ms var(--ease-out) calc(var(--i, 0) * 120ms + 200ms),
+    transform 1000ms var(--ease-spring) calc(var(--i, 0) * 120ms + 200ms),
     fill-opacity 200ms ease;
 }
 
@@ -277,6 +379,16 @@ a.press {
   transition-timing-function: var(--ease-out);
 }
 
+/* Photos lift slightly on hover */
+.photo-frame img {
+  transition: transform 800ms var(--ease-out);
+}
+
+.photo-frame:hover img,
+.photo-frame:focus-visible img {
+  transform: scale(1.04);
+}
+
 /* ---------- Lightbox ---------- */
 @keyframes dialog-in {
   from {
@@ -294,7 +406,7 @@ dialog.lightbox[open] {
 }
 
 dialog.lightbox::backdrop {
-  background: rgb(8 20 15 / 0.82);
+  background: rgb(20 17 42 / 0.82);
 }
 
 /* ---------- Interactive components (diagram, simulations) ---------- */
@@ -307,7 +419,7 @@ dialog.lightbox::backdrop {
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -315,7 +427,7 @@ dialog.lightbox::backdrop {
   }
 }
 
-@keyframes bob {
+@keyframes bob-svg {
   0%,
   100% {
     transform: translateY(0);
@@ -337,10 +449,13 @@ dialog.lightbox::backdrop {
 }
 
 @keyframes pop {
-  from {
+  0% {
     transform: scale(0);
   }
-  to {
+  70% {
+    transform: scale(1.25);
+  }
+  100% {
     transform: scale(1);
   }
 }
@@ -354,6 +469,24 @@ dialog.lightbox::backdrop {
   }
 }
 
+.anim-wave {
+  animation: drift 6s linear infinite;
+}
+
+.anim-rise {
+  animation: rise 700ms var(--ease-out) both;
+}
+
+.anim-bob {
+  animation: bob-svg 5s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.anim-pulse {
+  animation: pulse-ring 1.8s var(--ease-out) infinite;
+}
+
 @keyframes pulse-soft {
   0%,
   100% {
@@ -364,30 +497,12 @@ dialog.lightbox::backdrop {
   }
 }
 
-.anim-wave {
-  animation: drift 6s linear infinite;
-}
-
-.anim-rise {
-  animation: rise 1s var(--ease-out) both;
-}
-
-.anim-bob {
-  animation: bob 5s ease-in-out infinite;
-  transform-box: fill-box;
-  transform-origin: center;
-}
-
-.anim-pulse {
-  animation: pulse-ring 1.8s var(--ease-out) infinite;
-}
-
 .anim-pulse-soft {
   animation: pulse-soft 1.6s ease-in-out infinite;
 }
 
-.clone-cell > ellipse {
-  animation: pop 420ms var(--ease-out) both;
+.clone-cell > * {
+  animation: pop 480ms var(--ease-spring) both;
   transform-box: fill-box;
   transform-origin: center;
 }
@@ -397,7 +512,7 @@ dialog.lightbox::backdrop {
   animation: draw 1.4s var(--ease-out) both;
 }
 
-/* ---------- Footer water scene ---------- */
+/* ---------- Footer pond scene ---------- */
 @keyframes drift-in {
   from {
     opacity: 0;
@@ -421,23 +536,11 @@ dialog.lightbox::backdrop {
 @keyframes ripple {
   from {
     transform: scale(0.08);
-    opacity: 0.75;
+    opacity: 0.8;
   }
   to {
     transform: scale(1.6);
     opacity: 0;
-  }
-}
-
-@keyframes shimmer {
-  0%,
-  100% {
-    opacity: 0;
-    transform: translateX(-12px);
-  }
-  50% {
-    opacity: 0.85;
-    transform: translateX(12px);
   }
 }
 
@@ -461,12 +564,12 @@ dialog.lightbox::backdrop {
 }
 
 .rosette {
-  animation: drift-in 900ms var(--ease-out) both;
+  animation: drift-in 900ms var(--ease-spring) both;
   animation-delay: var(--d, 0ms);
 }
 
 .rosette-bob {
-  animation: bob 6s ease-in-out infinite;
+  animation: bob-svg 6s ease-in-out infinite;
   animation-delay: var(--bob, 0s);
   transform-box: fill-box;
   transform-origin: center bottom;
@@ -480,7 +583,7 @@ dialog.lightbox::backdrop {
 }
 
 .bloom {
-  animation: bloom 700ms var(--ease-out) both;
+  animation: bloom 700ms var(--ease-spring) both;
   animation-delay: var(--bd, 900ms);
   transform-box: fill-box;
   transform-origin: center;
@@ -492,9 +595,19 @@ dialog.lightbox::backdrop {
   transform-origin: center;
 }
 
-.shimmer {
-  animation: shimmer 4.5s ease-in-out infinite;
-  animation-delay: var(--d, 0s);
+/* Horizontal nav: fade the edge so hidden links read as "more this way" */
+.nav-fade {
+  scrollbar-width: none;
+}
+
+@media (max-width: 639px) {
+  .nav-fade {
+    mask-image: linear-gradient(90deg, transparent 0, #000 0.75rem, #000 calc(100% - 2.5rem), transparent);
+  }
+}
+
+.nav-fade::-webkit-scrollbar {
+  display: none;
 }
 
 /* ---------- Reduced motion: no travel, keep meaning ---------- */
@@ -502,26 +615,23 @@ dialog.lightbox::backdrop {
   html {
     scroll-behavior: auto;
   }
-  .line-in,
-  .kenburns,
-  .marquee-track,
   .anim-wave,
   .anim-rise,
   .anim-bob,
   .anim-pulse,
   .anim-pulse-soft,
+  .bob,
+  .cover-drop,
   .pollen-path,
-  .clone-cell > ellipse,
+  .clone-cell > *,
   .rosette,
   .rosette-bob,
   .spike,
   .bloom,
-  .shimmer,
+  .paper.poke:hover,
+  .paper.poke.boing,
   dialog.lightbox[open] {
     animation: none;
-  }
-  .parallax img {
-    animation: none !important;
   }
   .ripple {
     animation-name: fade-out;
@@ -530,13 +640,16 @@ dialog.lightbox::backdrop {
   .pollen-path {
     stroke-dasharray: none;
   }
+  .drift {
+    transform: none;
+  }
   .reveal-heading,
   [data-stagger] > *,
-  .rule-draw,
+  .drop-in,
   .chart-line,
   .chart-bar,
   .photo-frame img,
-  .banner-photo img {
+  .paper {
     transition: none;
   }
 }

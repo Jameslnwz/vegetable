@@ -72,9 +72,9 @@ export default function HeroScene() {
             <stop offset="0.45" stopColor="var(--water-2)" />
             <stop offset="1" stopColor="var(--water-3)" />
           </linearGradient>
-          <linearGradient id="leafShade" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0" stopColor="#86b06f" />
-            <stop offset="1" stopColor="#5b8749" />
+          <linearGradient id="leafShade" x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0.5" stopColor="var(--shape-leaf)" />
+            <stop offset="0.5" stopColor="var(--shape-leaf-2)" />
           </linearGradient>
         </defs>
 
@@ -86,22 +86,6 @@ export default function HeroScene() {
             fill="var(--water-1)"
           />
         </g>
-
-        {/* แสงระยิบบนผิวน้ำ */}
-        {[120, 300, 520, 760, 980, 1190, 1360].map((x, i) => (
-          <line
-            key={x}
-            x1={x}
-            x2={x + 46}
-            y1={SURFACE + 26 + (i % 3) * 22}
-            y2={SURFACE + 26 + (i % 3) * 22}
-            stroke="#ffffff"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            className="shimmer"
-            style={{ ["--d" as string]: `${i * 0.6}s` }}
-          />
-        ))}
 
         {/* กอผักตบ */}
         {ROSETTES.map((r) => (
@@ -153,31 +137,31 @@ function Rosette({ flower, bloomDelay }: { flower: boolean; bloomDelay: number }
   return (
     <g>
       {/* ราก */}
-      <g fill="none" stroke="#2c2238" strokeWidth="1.6" opacity="0.4" strokeLinecap="round">
+      <g fill="none" stroke="var(--shape-root)" strokeWidth="1.6" opacity="0.4" strokeLinecap="round">
         <path d="M0 6 C -8 40, -22 60, -18 104" />
         <path d="M0 6 C 2 46, 10 70, 4 120" />
         <path d="M0 6 C 10 36, 24 58, 26 96" />
         <path d="M0 6 C -4 30, -34 50, -40 84" />
       </g>
       {/* ก้านใบพอง */}
-      <g fill="#bcd8ae" stroke="#4d6b3c" strokeWidth="2">
+      <g fill="var(--shape-float)">
         <ellipse cx="-22" cy="-16" rx="9" ry="19" transform="rotate(-22 -22 -16)" />
         <ellipse cx="22" cy="-16" rx="9" ry="19" transform="rotate(22 22 -16)" />
         <ellipse cx="0" cy="-20" rx="10" ry="21" />
       </g>
       {/* ใบ */}
-      <g fill="url(#leafShade)" stroke="#3f6131" strokeWidth="2">
+      <g fill="url(#leafShade)">
         <ellipse cx="-42" cy="-50" rx="32" ry="18" transform="rotate(-32 -42 -50)" />
         <ellipse cx="42" cy="-50" rx="32" ry="18" transform="rotate(32 42 -50)" />
         <ellipse cx="0" cy="-62" rx="34" ry="19" />
       </g>
-      <g fill="#ffffff" opacity="0.22">
+      <g fill="#ffffff" opacity="0.3">
         <ellipse cx="-8" cy="-68" rx="14" ry="5" />
         <ellipse cx="-48" cy="-56" rx="11" ry="4" transform="rotate(-32 -48 -56)" />
       </g>
       {flower && (
         <g className="spike" style={{ ["--bob" as string]: `${bloomDelay / 900}s` }}>
-          <path d="M4 -70 C 8 -100, 14 -126, 12 -156" fill="none" stroke="#3f6131" strokeWidth="4" strokeLinecap="round" />
+          <path d="M4 -70 C 8 -100, 14 -126, 12 -156" fill="none" stroke="var(--shape-stem)" strokeWidth="4" strokeLinecap="round" />
           {[
             [12, -150, 0],
             [-2, -136, 1],
@@ -201,10 +185,10 @@ function Blossom() {
   return (
     <g>
       {[0, 60, 120, 180, 240, 300].map((a) => (
-        <ellipse key={a} cx="0" cy="-7" rx="4.6" ry="8" fill={a === 0 ? "#8e6cc4" : "#7a58b2"} transform={`rotate(${a})`} />
+        <ellipse key={a} cx="0" cy="-7" rx="4.6" ry="8" fill={a === 0 ? "var(--shape-petal)" : "var(--shape-petal-2)"} transform={`rotate(${a})`} />
       ))}
       <ellipse cx="0" cy="-7" rx="2" ry="3" fill="var(--sun)" />
-      <circle cx="0" cy="0" r="2.4" fill="#4b3478" />
+      <circle cx="0" cy="0" r="2.4" fill="var(--shape-heart)" />
     </g>
   );
 }

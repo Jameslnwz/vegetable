@@ -54,18 +54,18 @@ export default function CloneGrowth() {
   };
 
   return (
-    <div className="rounded-3xl border border-line bg-paper p-4 sm:p-6">
+    <div className="rounded-[1.75rem] bg-paper-deep p-4 sm:p-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <dl className="flex gap-10">
           <div>
             <dt className="text-sm font-medium text-ink-soft">ผ่านไป</dt>
-            <dd className="tabular font-serif text-3xl font-bold text-ink">
+            <dd className="tabular text-3xl font-bold text-ink">
               {day < 30 ? `${day} วัน` : `${months} เดือน${rest ? ` ${rest} วัน` : ""}`}
             </dd>
           </div>
           <div>
             <dt className="text-sm font-medium text-ink-soft">จำนวนต้น</dt>
-            <dd className="tabular font-serif text-3xl font-bold text-violet">{count.toLocaleString("th-TH")}</dd>
+            <dd className="tabular text-3xl font-bold text-green-ink">{count.toLocaleString("th-TH")}</dd>
           </div>
         </dl>
         <div className="flex gap-2">
@@ -90,14 +90,18 @@ export default function CloneGrowth() {
         <figure>
           <svg
             viewBox={`0 0 ${COLS * 20} ${ROWS * 20}`}
-            className="block w-full rounded-2xl bg-teal-wash"
+            className="block w-full rounded-2xl bg-[var(--shape-water-1)]"
             role="img"
             aria-label={`บ่อจำลอง ผักตบปกคลุม ${Math.round((filled / CELLS) * 100)} เปอร์เซ็นต์ของผิวน้ำ`}
           >
-            {ORDER.slice(0, filled).map(({ c, r }) => (
-              <g key={`${c}-${r}`} className="clone-cell" transform={`translate(${c * 20 + 10} ${r * 20 + 10})`}>
-                <ellipse rx="7" ry="4.5" fill="#7f9f6a" transform="rotate(-30)" />
-                <ellipse rx="7" ry="4.5" fill="#6d8f59" transform="rotate(40)" />
+            {ORDER.slice(0, filled).map(({ c, r }, i) => (
+              <g key={`${c}-${r}`} className="clone-cell" transform={`translate(${c * 20 + 10} ${r * 20 + 10}) rotate(${(i * 47) % 360})`}>
+                <g>
+                  <circle cx="-3.5" cy="-1.5" r="5.2" fill={i % 2 ? "var(--shape-leaf)" : "var(--shape-leaf-deep)"} />
+                  <circle cx="3.5" cy="-1.5" r="5.2" fill={i % 2 ? "var(--shape-leaf-2)" : "var(--shape-leaf)"} />
+                  <circle cx="0" cy="3.5" r="4.6" fill="var(--shape-float)" />
+                  {i % 9 === 4 && <circle cx="0" cy="-2" r="2.6" fill="var(--shape-petal-2)" />}
+                </g>
               </g>
             ))}
           </svg>

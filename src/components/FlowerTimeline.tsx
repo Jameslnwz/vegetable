@@ -10,9 +10,9 @@ export default function FlowerTimeline() {
   const last = flowerTimeline.length - 1;
 
   return (
-    <div className="rounded-2xl border border-line bg-paper-deep p-4 sm:p-6">
+    <div className="rounded-[1.75rem] bg-paper-deep p-4 sm:p-6">
       <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-center">
-        <div className="rounded-xl bg-paper p-2">
+        <div className="rounded-2xl bg-white p-2">
           <StageArt stage={i} />
         </div>
         <div aria-live="polite" key={i} className="anim-rise">
@@ -69,13 +69,13 @@ function StageArt({ stage }: { stage: number }) {
     <svg viewBox="0 0 320 260" className="block w-full" role="img" aria-label={flowerTimeline[stage].title}>
       <rect x="0" y={water} width="320" height={260 - water} fill="var(--teal-wash)" style={{ transition: T }} />
       <line x1="0" x2="320" y1={water} y2={water} stroke="var(--teal)" strokeWidth="2" opacity="0.6" style={{ transition: T }} />
-      <rect x="0" y="236" width="320" height="24" fill="#a68f6b" opacity="0.5" />
+      <rect x="0" y="236" width="320" height="24" fill="var(--shape-soil)" opacity="0.5" />
 
       {!sprout && (
         <g>
           {/* ใบ */}
-          <ellipse cx="120" cy="140" rx="40" ry="18" fill="#7f9f6a" transform="rotate(-20 120 140)" />
-          <ellipse cx="196" cy="140" rx="40" ry="18" fill="#7f9f6a" transform="rotate(20 196 140)" />
+          <ellipse cx="120" cy="140" rx="40" ry="18" fill="var(--shape-leaf)" transform="rotate(-20 120 140)" />
+          <ellipse cx="196" cy="140" rx="40" ry="18" fill="var(--shape-leaf)" transform="rotate(20 196 140)" />
           {/* ก้านช่อดอก */}
           <g
             style={{
@@ -84,7 +84,7 @@ function StageArt({ stage }: { stage: number }) {
               transition: T,
             }}
           >
-            <line x1="160" y1="140" x2="160" y2={stage === 0 ? 70 : 50} stroke="#4d6b3c" strokeWidth="4" style={{ transition: T }} />
+            <line x1="160" y1="140" x2="160" y2={stage === 0 ? 70 : 50} stroke="var(--shape-stem)" strokeWidth="4" style={{ transition: T }} />
             {[0, 1, 2, 3].map((k) => {
               const y = 60 + k * 16;
               const r = bloom ? 12 : wilt ? 6 : stage === 0 ? 5 : 0;
@@ -94,19 +94,19 @@ function StageArt({ stage }: { stage: number }) {
                   cx={160 + (k % 2 ? 10 : -10)}
                   cy={y}
                   r={r}
-                  fill={wilt ? "#9b8aa8" : "var(--violet)"}
+                  fill={wilt ? "var(--shape-wilt)" : "var(--violet)"}
                   style={{ transition: T }}
                 />
               );
             })}
             {bloom && <circle cx="150" cy="60" r="3" fill="var(--sun)" />}
-            {bent && <ellipse cx="160" cy="58" rx="9" ry="14" fill="#8a6a3f" />}
+            {bent && <ellipse cx="160" cy="58" rx="9" ry="14" fill="var(--shape-fruit)" />}
           </g>
           {/* ผึ้ง */}
           {bloom && (
             <g className="anim-bob">
               <ellipse cx="214" cy="62" rx="10" ry="7" fill="var(--sun)" stroke="var(--ink)" strokeWidth="1.5" />
-              <ellipse cx="210" cy="54" rx="6" ry="4" fill="#fff" opacity="0.8" />
+              <ellipse cx="210" cy="54" rx="6" ry="4" fill="#ffffff" opacity="0.8" />
             </g>
           )}
         </g>
@@ -115,16 +115,16 @@ function StageArt({ stage }: { stage: number }) {
       {/* เมล็ดจมลงตะกอน */}
       {seed &&
         [0, 1, 2, 3, 4].map((k) => (
-          <circle key={k} cx={120 + k * 22} cy={sprout ? 244 : 240} r="3" fill="#5a4325" style={{ transition: T }} />
+          <circle key={k} cx={120 + k * 22} cy={sprout ? 244 : 240} r="3" fill="var(--shape-soil-dark)" style={{ transition: T }} />
         ))}
 
       {/* ต้นกล้า */}
       {sprout &&
         [0, 2, 4].map((k) => (
           <g key={k} className="anim-rise" style={{ animationDelay: `${k * 80}ms` }}>
-            <line x1={120 + k * 22} y1="240" x2={120 + k * 22} y2="214" stroke="#4d6b3c" strokeWidth="2.5" />
-            <ellipse cx={120 + k * 22 - 7} cy="212" rx="8" ry="4" fill="#7f9f6a" />
-            <ellipse cx={120 + k * 22 + 7} cy="210" rx="8" ry="4" fill="#7f9f6a" />
+            <line x1={120 + k * 22} y1="240" x2={120 + k * 22} y2="214" stroke="var(--shape-stem)" strokeWidth="2.5" />
+            <ellipse cx={120 + k * 22 - 7} cy="212" rx="8" ry="4" fill="var(--shape-leaf)" />
+            <ellipse cx={120 + k * 22 + 7} cy="210" rx="8" ry="4" fill="var(--shape-leaf)" />
           </g>
         ))}
     </svg>
