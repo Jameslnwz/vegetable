@@ -2,12 +2,21 @@
 
 import { useState } from "react";
 import { flowerTimeline } from "@/content/plant";
+import { NarrationControls, useNarratedPlayer } from "./NarratedPlayer";
 
 // เลื่อนแถบเวลาเพื่อดูว่าเกิดอะไรขึ้นหลังดอกบาน
 export default function FlowerTimeline() {
   const [i, setI] = useState(0);
   const stage = flowerTimeline[i];
   const last = flowerTimeline.length - 1;
+  const player = useNarratedPlayer({
+    script: flowerTimeline.map((s) => ({ text: `${s.when} ${s.title} ${s.text}` })),
+    onSegment: setI,
+  });
+  const go = (n: number) => {
+    player.seek(n);
+    setI(n);
+  };
 
   return (
     <div className="rounded-2xl border border-line bg-paper-deep p-4 sm:p-6">
@@ -30,7 +39,7 @@ export default function FlowerTimeline() {
           max={last}
           step={1}
           value={i}
-          onChange={(e) => setI(Number(e.target.value))}
+          onChange={(e) => go(Number(e.target.value))}
           className="w-full accent-[var(--violet)]"
           aria-valuetext={`${stage.when}: ${stage.title}`}
         />
@@ -40,7 +49,7 @@ export default function FlowerTimeline() {
           <li key={s.when}>
             <button
               type="button"
-              onClick={() => setI(idx)}
+              onClick={() => go(idx)}
               aria-current={idx === i ? "step" : undefined}
               className={`min-h-11 w-full cursor-pointer rounded-lg px-2 text-base transition-colors duration-200 ${
                 idx === i ? "bg-violet text-paper" : "text-ink-soft hover:text-violet"
@@ -51,6 +60,9 @@ export default function FlowerTimeline() {
           </li>
         ))}
       </ol>
+      <div className="mt-4">
+        <NarrationControls player={player} idleLabel="เล่นอัตโนมัติ" />
+      </div>
     </div>
   );
 }

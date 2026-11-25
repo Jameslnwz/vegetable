@@ -245,7 +245,7 @@ function FertilizationVisual({ step }: { step: number }) {
 export function DoubleFertilization() {
   return (
     <div className="rounded-2xl border border-line bg-paper-deep p-4 sm:p-6">
-      <Stepper steps={fertilizationSteps} visual={(s) => <FertilizationVisual step={s} />} intervalMs={3600} />
+      <Stepper steps={fertilizationSteps} visual={(s) => <FertilizationVisual step={s} />} />
     </div>
   );
 }

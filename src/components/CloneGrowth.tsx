@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState, type PointerEvent } from "react";
+import { useRef, useState, type PointerEvent } from "react";
 import { cloneCaptions } from "@/content/plant";
+import { NarrationControls, useNarratedPlayer, type Seg } from "./NarratedPlayer";
 import { Icon, PillButton } from "./ui";
 
 const END_DAY = 240;
@@ -28,30 +29,26 @@ function buildOrder() {
 
 const ORDER = buildOrder();
 
+// สคริปต์บรรยาย: แต่ละช่วงเลื่อนวันไปถึงวันของคำบรรยายนั้น
+const SCRIPT: Seg[] = cloneCaptions.map((c, i) => ({
+  text: c.text,
+  p0: i === 0 ? 0 : cloneCaptions[i - 1].day,
+  p1: c.day,
+}));
+
 export default function CloneGrowth() {
   const [day, setDay] = useState(0);
-  const [playing, setPlaying] = useState(false);
-
-  useEffect(() => {
-    if (!playing) return;
-    if (day >= END_DAY) {
-      const stop = window.setTimeout(() => setPlaying(false), 0);
-      return () => window.clearTimeout(stop);
-    }
-    const id = window.setTimeout(() => setDay((d) => Math.min(END_DAY, d + 1)), 45);
-    return () => window.clearTimeout(id);
-  }, [playing, day]);
+  const player = useNarratedPlayer({
+    script: SCRIPT,
+    onValue: (v) => setDay(Math.round(v)),
+  });
+  const narrating = player.status !== "idle";
 
   const count = countAt(day);
   const filled = Math.max(1, Math.round((CELLS * count) / FINAL));
   const caption = [...cloneCaptions].reverse().find((c) => day >= c.day) ?? cloneCaptions[0];
   const months = Math.floor(day / 30);
   const rest = day % 30;
-
-  const toggle = () => {
-    if (day >= END_DAY) setDay(0);
-    setPlaying((p) => !p);
-  };
 
   return (
     <div className="rounded-3xl border border-line bg-paper p-4 sm:p-6">
@@ -68,22 +65,21 @@ export default function CloneGrowth() {
             <dd className="tabular font-serif text-3xl font-bold text-violet">{count.toLocaleString("th-TH")}</dd>
           </div>
         </dl>
-        <div className="flex gap-2">
-          <PillButton onClick={toggle} tone="solid">
-            <Icon name={playing ? "pause" : "play"} />
-            {playing ? "หยุด" : day >= END_DAY ? "เล่นอีกครั้ง" : day > 0 ? "เล่นต่อ" : "เล่นพร้อมคำบรรยาย"}
-          </PillButton>
-          <PillButton
-            onClick={() => {
-              setPlaying(false);
-              setDay(0);
-            }}
-            disabled={day === 0}
-            label="เริ่มใหม่"
-          >
-            <Icon name="reset" />
-          </PillButton>
-        </div>
+        <PillButton
+          onClick={() => {
+            player.stop();
+            player.seek(0);
+            setDay(0);
+          }}
+          disabled={day === 0}
+          label="เริ่มใหม่"
+        >
+          <Icon name="reset" />
+        </PillButton>
+      </div>
+
+      <div className="mt-4">
+        <NarrationControls player={player} subtitle />
       </div>
 
       <div className="mt-5 grid gap-5 lg:grid-cols-2">
@@ -114,16 +110,14 @@ export default function CloneGrowth() {
           max={END_DAY}
           value={day}
           onChange={(e) => {
-            setPlaying(false);
+            player.seek(0);
             setDay(Number(e.target.value));
           }}
           className="w-full"
         />
       </label>
 
-      <p aria-live="polite" className="mt-2 min-h-[3.6em] text-lg text-ink">
-        {caption.text}
-      </p>
+      {!narrating && <p className="mt-2 min-h-[3.6em] text-lg text-ink">{caption.text}</p>}
       <p className="mt-2 text-sm text-ink-soft">
         จำลองจากผักตบ 10 ต้น เพิ่มเป็นสองเท่าทุก 15 วัน ครบ 8 เดือนได้ 655,360 ต้น (Penfound &amp; Earle, 1948)
       </p>

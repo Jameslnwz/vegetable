@@ -497,6 +497,33 @@ dialog.lightbox::backdrop {
   animation-delay: var(--d, 0s);
 }
 
+/* ---------- Narrated player ---------- */
+.narration .subtitle {
+  margin-bottom: 0.75rem;
+  border-left: 4px solid var(--violet);
+  background: var(--violet-wash);
+  padding: 0.75rem 1rem;
+  font-size: 1.25rem;
+  line-height: 1.6;
+  color: var(--ink);
+  border-radius: 0 0.75rem 0.75rem 0;
+}
+.sbar-track {
+  display: block;
+  height: 6px;
+  min-width: 6rem;
+  flex: 1 1 8rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--line);
+}
+.sbar-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--violet);
+}
+
 /* ---------- Reduced motion: no travel, keep meaning ---------- */
 @media (prefers-reduced-motion: reduce) {
   html {

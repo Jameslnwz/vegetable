@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { morphs, tristylyNote, type Morph } from "@/content/plant";
+import { NarrationControls, useNarratedPlayer, type Seg } from "./NarratedPlayer";
 import { PillButton } from "./ui";
 
 type Level = "high" | "mid" | "low";
@@ -12,18 +13,29 @@ const ORDER: Morph[] = ["L", "M", "S"];
 
 type View = "all" | Morph;
 
+// ไล่ดูทีละแบบ แล้วจบด้วยภาพรวมการถ่ายละอองเรณู
+const VIEWS: View[] = [...ORDER, "all"];
+const SCRIPT: Seg[] = VIEWS.map((v) => ({
+  text: v === "all" ? tristylyNote : `${morphs[v].name} ${morphs[v].sub} ${morphs[v].text}`,
+}));
+
 export default function Tristyly() {
   const [view, setView] = useState<View>("all");
+  const player = useNarratedPlayer({ script: SCRIPT, onSegment: (i) => setView(VIEWS[i]) });
+  const pick = (v: View) => {
+    player.seek(VIEWS.indexOf(v));
+    setView(v);
+  };
   const shown = view === "all" ? ORDER : [view];
 
   return (
     <div className="rounded-2xl border border-line bg-paper-deep p-4 sm:p-6">
       <div className="flex flex-wrap gap-2" role="group" aria-label="เลือกแบบดอก">
-        <PillButton pressed={view === "all"} onClick={() => setView("all")}>
+        <PillButton pressed={view === "all"} onClick={() => pick("all")}>
           ทั้ง 3 แบบ
         </PillButton>
         {ORDER.map((m) => (
-          <PillButton key={m} pressed={view === m} onClick={() => setView(m)}>
+          <PillButton key={m} pressed={view === m} onClick={() => pick(m)}>
             {morphs[m].name}
           </PillButton>
         ))}
@@ -93,6 +105,9 @@ export default function Tristyly() {
             <p className="text-lg text-ink">{morphs[view].text}</p>
           </>
         )}
+      </div>
+      <div className="mt-4">
+        <NarrationControls player={player} idleLabel="เล่นอัตโนมัติ" />
       </div>
     </div>
   );
