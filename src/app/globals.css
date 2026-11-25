@@ -610,6 +610,263 @@ dialog.lightbox::backdrop {
   display: none;
 }
 
+/* ---------- Narrated player ---------- */
+.narration .subtitle {
+  position: relative;
+  overflow: hidden;
+  min-height: 5.5rem;
+  border-radius: 1rem;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  padding: 1rem 1.25rem 1.25rem;
+  font-size: 1.2rem;
+  line-height: 1.65;
+  color: var(--ink-soft);
+  transition: border-color 300ms ease, box-shadow 300ms ease;
+}
+.narration .subtitle.is-live {
+  color: var(--ink);
+  border-color: color-mix(in srgb, var(--violet) 45%, transparent);
+  box-shadow: inset 4px 0 0 var(--violet);
+}
+.subtitle-count {
+  float: right;
+  margin: -0.25rem -0.25rem 0 0.75rem;
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+}
+.sbar-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  background: transparent;
+}
+.sbar-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--teal), var(--violet));
+}
+@keyframes rise-sm {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.anim-rise-sm {
+  animation: rise-sm 450ms var(--ease-out) both;
+}
+
+/* ---------- SVG motion helpers (กราฟิกบทการสืบพันธุ์) ---------- */
+@keyframes pop-in {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes split-out {
+  from {
+    transform: translate(0, 0) scale(0.7);
+    opacity: 0.4;
+  }
+  to {
+    transform: translate(var(--dx), var(--dy));
+    opacity: 1;
+  }
+}
+@keyframes draw-1 {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes degen {
+  to {
+    transform: scale(0.75);
+    opacity: 0.18;
+    filter: grayscale(1);
+  }
+}
+@keyframes swell {
+  to {
+    transform: scale(1.25);
+  }
+}
+@keyframes bee {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-16px, 6px);
+  }
+  50% {
+    transform: translate(-30px, -4px);
+  }
+  75% {
+    transform: translate(-12px, -10px);
+  }
+}
+.g-pop {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pop-in 600ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.g-split {
+  animation: split-out 1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.g-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-1 1.8s ease forwards;
+}
+.g-degen {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: degen 1.4s 0.5s ease forwards;
+}
+.g-swell {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: swell 1.2s 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+.g-nuc {
+  transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* ดอกสามแบบ */
+.tri .flw {
+  transition: opacity 0.5s ease;
+}
+.tri.focus .flw:not(.on) {
+  opacity: 0.18;
+}
+.tri .arw {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.tri .arw.on {
+  opacity: 1;
+}
+
+/* หลังดอกบาน */
+.ss .spk {
+  transform-box: view-box;
+  transform-origin: 200px 146px;
+  transition: transform 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.ss[data-p="3"] .spk,
+.ss[data-p="4"] .spk,
+.ss[data-p="5"] .spk {
+  transform: rotate(128deg);
+}
+.ss .fw {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.8s ease, opacity 0.8s ease, filter 0.8s ease;
+  transform: scale(0.45);
+  filter: saturate(0.4);
+}
+.ss[data-p="1"] .fw {
+  transform: none;
+  filter: none;
+}
+.ss[data-p="2"] .fw {
+  transform: scale(0.7) rotate(25deg);
+  filter: saturate(0.25) brightness(0.8);
+}
+.ss[data-p="3"] .fw,
+.ss[data-p="4"] .fw,
+.ss[data-p="5"] .fw {
+  opacity: 0;
+}
+.ss .cp {
+  opacity: 0;
+  transition: opacity 0.8s 0.6s ease;
+}
+.ss[data-p="3"] .cp {
+  opacity: 1;
+}
+.ss[data-p="4"] .cp {
+  opacity: 0.35;
+}
+.ss .sd {
+  opacity: 0;
+  transition: transform 1.6s cubic-bezier(0.5, 0, 0.6, 1), opacity 0.4s ease;
+}
+.ss[data-p="4"] .sd,
+.ss[data-p="5"] .sd {
+  opacity: 1;
+  transform: translate(var(--sx), var(--sy));
+}
+.ss .wt,
+.ss .flo {
+  transition: transform 1.6s ease;
+}
+.ss[data-p="5"] .wt,
+.ss[data-p="5"] .flo {
+  transform: translateY(96px);
+}
+.ss .sl {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  transform: scale(0);
+  transition: transform 1s 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.ss[data-p="5"] .sl {
+  transform: none;
+}
+.ss .bee {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.ss[data-p="1"] .bee {
+  opacity: 1;
+}
+.ss .bee g {
+  animation: bee 3s ease-in-out infinite;
+}
+.ss .sky {
+  transition: fill 1s ease;
+}
+.ss .moon,
+.ss .sun,
+.ss .dusk {
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+.ss[data-p="0"] .moon,
+.ss[data-p="1"] .sun,
+.ss[data-p="3"] .sun,
+.ss[data-p="4"] .sun,
+.ss[data-p="5"] .sun,
+.ss[data-p="2"] .dusk {
+  opacity: 1;
+}
+
+/* บ่อจำลอง */
+.pond .r {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(0.3);
+  transition: opacity 0.35s ease, transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.pond .r.on {
+  opacity: 1;
+  transform: none;
+}
+
+
 /* ---------- Reduced motion: no travel, keep meaning ---------- */
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -651,5 +908,28 @@ dialog.lightbox::backdrop {
   .photo-frame img,
   .paper {
     transition: none;
+  }
+  .anim-rise-sm,
+  .g-pop,
+  .g-draw,
+  .g-degen,
+  .g-swell,
+  .ss .bee g {
+    animation: none;
+  }
+  .g-split {
+    animation: none;
+    transform: translate(var(--dx), var(--dy));
+  }
+  .g-draw {
+    stroke-dashoffset: 0;
+  }
+  .g-degen {
+    transform: scale(0.75);
+    opacity: 0.18;
+    filter: grayscale(1);
+  }
+  .g-swell {
+    transform: scale(1.25);
   }
 }

@@ -1,132 +1,158 @@
 "use client";
 
 import { useState } from "react";
-import { flowerTimeline } from "@/content/plant";
+import { flowerScript, flowerTimeline } from "@/content/plant";
+import { NarrationControls, useNarratedPlayer } from "./NarratedPlayer";
 
-// เลื่อนแถบเวลาเพื่อดูว่าเกิดอะไรขึ้นหลังดอกบาน
-export default function FlowerTimeline() {
-  const [i, setI] = useState(0);
-  const stage = flowerTimeline[i];
-  const last = flowerTimeline.length - 1;
+// จากดอกหนึ่งวันสู่เมล็ดในตะกอน: ฉากเดียวที่เปลี่ยนตามช่วงเวลา (ท้องฟ้า ดอก ก้านช่อ เมล็ด น้ำ)
+const SKY = ["var(--forest)", "var(--shape-water-1)", "var(--orange-wash)", "var(--shape-water-1)", "var(--shape-water-1)", "var(--shape-water-1)"];
+const FL = [
+  [200, 52],
+  [190, 64],
+  [210, 66],
+  [192, 80],
+  [208, 82],
+  [200, 94],
+];
+const SEEDS = Array.from({ length: 14 }, (_, i) => [262 + (i % 5) * 4, 200 + Math.floor(i / 5) * 5, -30 + i * 7.5, 62 + (i % 3) * 8]);
 
+function Scene({ p }: { p: number }) {
   return (
-    <div className="rounded-[1.75rem] bg-paper-deep p-4 sm:p-6">
-      <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-center">
-        <div className="rounded-2xl bg-white p-2">
-          <StageArt stage={i} />
-        </div>
-        <div aria-live="polite" key={i} className="anim-rise">
-          <p className="text-base font-medium text-violet">{stage.when}</p>
-          <h4 className="mt-1 text-2xl font-bold text-ink">{stage.title}</h4>
-          <p className="mt-3 text-lg text-ink">{stage.text}</p>
-        </div>
-      </div>
-
-      <label className="mt-6 block">
-        <span className="sr-only">เลื่อนแถบเวลา</span>
-        <input
-          type="range"
-          min={0}
-          max={last}
-          step={1}
-          value={i}
-          onChange={(e) => setI(Number(e.target.value))}
-          className="w-full accent-[var(--violet)]"
-          aria-valuetext={`${stage.when}: ${stage.title}`}
-        />
-      </label>
-      <ol className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-6">
-        {flowerTimeline.map((s, idx) => (
-          <li key={s.when}>
-            <button
-              type="button"
-              onClick={() => setI(idx)}
-              aria-current={idx === i ? "step" : undefined}
-              className={`min-h-11 w-full cursor-pointer rounded-lg px-2 text-base transition-colors duration-200 ${
-                idx === i ? "bg-violet text-paper" : "text-ink-soft hover:text-violet"
-              }`}
-            >
-              {s.when}
-            </button>
-          </li>
+    <svg
+      viewBox="0 0 400 300"
+      className="ss block w-full rounded-2xl bg-white"
+      data-p={p}
+      role="img"
+      aria-label={`ฉาก${flowerTimeline[p].when}: ${flowerTimeline[p].title}`}
+    >
+      <rect className="sky" width="400" height="160" style={{ fill: SKY[p] }} />
+      <circle className="moon" cx="330" cy="40" r="14" fill="var(--sun-wash)" />
+      <circle className="sun" cx="330" cy="44" r="20" fill="var(--sun)" />
+      <circle className="dusk" cx="330" cy="128" r="28" fill="var(--orange)" />
+      <rect y="140" width="400" height="160" fill="var(--shape-leaf-wash)" />
+      <path d="M0 150 C100 144 220 156 400 148 V300 H0Z" fill="var(--shape-leaf-wash-2)" />
+      <g className="wt">
+        <rect y="146" width="400" height="160" fill="var(--shape-water-2)" />
+        <path d="M0 146H400" stroke="#ffffff" strokeOpacity=".8" strokeWidth="2" />
+      </g>
+      <path d="M0 262 C80 256 160 268 240 260 C310 254 360 264 400 258 V300 H0Z" fill="var(--shape-soil)" />
+      <g fill="var(--shape-soil-dark)" opacity=".5">
+        {[
+          [40, 278],
+          [90, 284],
+          [150, 276],
+          [210, 288],
+          [330, 280],
+          [370, 290],
+        ].map(([x, y]) => (
+          <ellipse key={x} cx={x} cy={y} rx="6" ry="2.5" />
         ))}
-      </ol>
-    </div>
+      </g>
+      {SEEDS.map(([x, y, dx, dy], i) => (
+        <ellipse
+          key={i}
+          className="sd"
+          cx={x}
+          cy={y}
+          rx="2.6"
+          ry="1.4"
+          fill="var(--shape-soil-dark)"
+          style={{ ["--sx" as string]: `${dx}px`, ["--sy" as string]: `${dy}px` }}
+        />
+      ))}
+      {[
+        [118, 264],
+        [150, 266],
+        [318, 262],
+      ].map(([x, y]) => (
+        <g key={x} className="sl">
+          <path d={`M${x} ${y} v-10`} stroke="var(--shape-stem)" strokeWidth="2" />
+          <ellipse cx={x - 5} cy={y - 12} rx="5" ry="3" fill="var(--shape-leaf)" transform={`rotate(-30 ${x - 5} ${y - 12})`} />
+          <ellipse cx={x + 5} cy={y - 13} rx="5" ry="3" fill="var(--shape-leaf)" transform={`rotate(30 ${x + 5} ${y - 13})`} />
+        </g>
+      ))}
+      <g className="flo">
+        <use href="#hy-roots" x="176" y="150" width="48" height="72" />
+        <g className="spk">
+          <path d="M200 146 C201 120 199 86 200 48" stroke="var(--shape-stem)" strokeWidth="3.5" fill="none" />
+          {FL.map(([x, y]) => (
+            <g key={`f${x}-${y}`} className="fw">
+              <use href="#hy-fl" x={x - 9} y={y - 9} width="18" height="18" />
+            </g>
+          ))}
+          {FL.map(([x, y]) => (
+            <ellipse key={`c${x}-${y}`} className="cp" cx={x} cy={y} rx="4" ry="7" fill="var(--shape-leaf-deep)" />
+          ))}
+        </g>
+        <use href="#hy-leaves" x="152" y="40" width="96" height="112" />
+      </g>
+      <g className="bee">
+        <g>
+          <ellipse cx="262" cy="74" rx="8" ry="5" fill="var(--sun)" />
+          <path d="M259 70v8M264 70v8" stroke="var(--ink)" strokeWidth="2" />
+          <ellipse cx="260" cy="67" rx="5" ry="3.5" fill="#ffffff" opacity=".85" />
+          <ellipse cx="266" cy="67" rx="5" ry="3.5" fill="#ffffff" opacity=".85" />
+        </g>
+      </g>
+    </svg>
   );
 }
 
-const T = "all 700ms cubic-bezier(0.16,1,0.3,1)";
-
-function StageArt({ stage }: { stage: number }) {
-  const bloom = stage === 1;
-  const wilt = stage === 2;
-  const bent = stage >= 3 && stage <= 4;
-  const seed = stage >= 4;
-  const sprout = stage === 5;
-  const water = sprout ? 228 : 150;
+export default function FlowerTimeline() {
+  const [p, setP] = useState(0);
+  const stage = flowerTimeline[p];
+  const last = flowerTimeline.length - 1;
+  const player = useNarratedPlayer({
+    script: flowerScript.map((s) => ({ text: s.text, on: s.p != null ? () => setP(s.p!) : undefined })),
+  });
+  const go = (n: number) => {
+    player.seek(flowerScript.findIndex((s) => s.p === n));
+    setP(n);
+  };
 
   return (
-    <svg viewBox="0 0 320 260" className="block w-full" role="img" aria-label={flowerTimeline[stage].title}>
-      <rect x="0" y={water} width="320" height={260 - water} fill="var(--teal-wash)" style={{ transition: T }} />
-      <line x1="0" x2="320" y1={water} y2={water} stroke="var(--teal)" strokeWidth="2" opacity="0.6" style={{ transition: T }} />
-      <rect x="0" y="236" width="320" height="24" fill="var(--shape-soil)" opacity="0.5" />
+    <div className="grid gap-6 rounded-[1.75rem] bg-paper-deep p-4 sm:p-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-start">
+      <div aria-live="polite" key={p} className="anim-rise-sm">
+        <span className="inline-block rounded-lg bg-teal-wash px-3 py-1 text-lg font-semibold text-teal">{stage.when}</span>
+        <h4 className="mt-3 text-2xl font-bold text-ink">{stage.title}</h4>
+        <p className="mt-2 text-lg text-ink-soft">{stage.text}</p>
+      </div>
 
-      {!sprout && (
-        <g>
-          {/* ใบ */}
-          <ellipse cx="120" cy="140" rx="40" ry="18" fill="var(--shape-leaf)" transform="rotate(-20 120 140)" />
-          <ellipse cx="196" cy="140" rx="40" ry="18" fill="var(--shape-leaf)" transform="rotate(20 196 140)" />
-          {/* ก้านช่อดอก */}
-          <g
-            style={{
-              transform: bent ? "rotate(118deg)" : "rotate(0deg)",
-              transformOrigin: "160px 140px",
-              transition: T,
-            }}
-          >
-            <line x1="160" y1="140" x2="160" y2={stage === 0 ? 70 : 50} stroke="var(--shape-stem)" strokeWidth="4" style={{ transition: T }} />
-            {[0, 1, 2, 3].map((k) => {
-              const y = 60 + k * 16;
-              const r = bloom ? 12 : wilt ? 6 : stage === 0 ? 5 : 0;
-              return (
-                <circle
-                  key={k}
-                  cx={160 + (k % 2 ? 10 : -10)}
-                  cy={y}
-                  r={r}
-                  fill={wilt ? "var(--shape-wilt)" : "var(--violet)"}
-                  style={{ transition: T }}
-                />
-              );
-            })}
-            {bloom && <circle cx="150" cy="60" r="3" fill="var(--sun)" />}
-            {bent && <ellipse cx="160" cy="58" rx="9" ry="14" fill="var(--shape-fruit)" />}
-          </g>
-          {/* ผึ้ง */}
-          {bloom && (
-            <g className="anim-bob">
-              <ellipse cx="214" cy="62" rx="10" ry="7" fill="var(--sun)" stroke="var(--ink)" strokeWidth="1.5" />
-              <ellipse cx="210" cy="54" rx="6" ry="4" fill="#ffffff" opacity="0.8" />
-            </g>
-          )}
-        </g>
-      )}
-
-      {/* เมล็ดจมลงตะกอน */}
-      {seed &&
-        [0, 1, 2, 3, 4].map((k) => (
-          <circle key={k} cx={120 + k * 22} cy={sprout ? 244 : 240} r="3" fill="var(--shape-soil-dark)" style={{ transition: T }} />
-        ))}
-
-      {/* ต้นกล้า */}
-      {sprout &&
-        [0, 2, 4].map((k) => (
-          <g key={k} className="anim-rise" style={{ animationDelay: `${k * 80}ms` }}>
-            <line x1={120 + k * 22} y1="240" x2={120 + k * 22} y2="214" stroke="var(--shape-stem)" strokeWidth="2.5" />
-            <ellipse cx={120 + k * 22 - 7} cy="212" rx="8" ry="4" fill="var(--shape-leaf)" />
-            <ellipse cx={120 + k * 22 + 7} cy="210" rx="8" ry="4" fill="var(--shape-leaf)" />
-          </g>
-        ))}
-    </svg>
+      <div>
+        <Scene p={p} />
+        <div className="mt-4">
+          <NarrationControls player={player} idleText={stage.text} />
+        </div>
+        <label className="block">
+          <span className="sr-only">เลื่อนแถบเวลา</span>
+          <input
+            type="range"
+            min={0}
+            max={last}
+            step={1}
+            value={p}
+            onChange={(e) => go(Number(e.target.value))}
+            className="w-full accent-[var(--violet)]"
+            aria-valuetext={`${stage.when}: ${stage.title}`}
+          />
+        </label>
+        <ol className="mt-1 grid grid-cols-3 gap-1 sm:grid-cols-6">
+          {flowerTimeline.map((s, i) => (
+            <li key={s.when}>
+              <button
+                type="button"
+                onClick={() => go(i)}
+                aria-current={i === p ? "step" : undefined}
+                className={`min-h-11 w-full cursor-pointer rounded-lg px-1 text-base transition-colors duration-200 ${
+                  i === p ? "font-semibold text-violet" : "text-ink-soft hover:text-violet"
+                }`}
+              >
+                {s.when}
+              </button>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
   );
 }
