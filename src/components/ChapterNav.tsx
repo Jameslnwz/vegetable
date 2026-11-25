@@ -12,18 +12,25 @@ const chapters = [
   { id: "credits", label: "ผู้จัดทำ" },
 ];
 
+// หัวนิตยสาร: โปร่งใสบนรูปปก แล้วเป็นแถบทึบเมื่อเลื่อนพ้นปก
 export default function ChapterNav() {
   const [progress, setProgress] = useState(0);
-  const [active, setActive] = useState<string>("");
+  const [solid, setSolid] = useState(false);
+  const [active, setActive] = useState("");
 
   useEffect(() => {
     const onScroll = () => {
       const max = document.documentElement.scrollHeight - window.innerHeight;
       setProgress(max > 0 ? Math.min(1, window.scrollY / max) : 0);
+      setSolid(window.scrollY > window.innerHeight * 0.8);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
 
   useEffect(() => {
@@ -42,36 +49,41 @@ export default function ChapterNav() {
   }, []);
 
   return (
-    <div className="sticky top-0 z-30 border-b border-line bg-paper/95">
-      <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-2 sm:px-6">
-        <a href="#top" className="flex shrink-0 items-center gap-2.5 text-xl font-bold text-ink">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet text-paper" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <ellipse cx="12" cy="7" rx="3" ry="4.5" />
-              <ellipse cx="7" cy="11" rx="3" ry="4.5" transform="rotate(-60 7 11)" />
-              <ellipse cx="17" cy="11" rx="3" ry="4.5" transform="rotate(60 17 11)" />
-              <rect x="11" y="12" width="2" height="9" rx="1" />
-            </svg>
-          </span>
+    <div
+      className={`fixed inset-x-0 top-0 z-40 transition-[background-color,color,box-shadow] duration-500 ${
+        solid ? "bg-paper/95 text-ink shadow-[0_1px_0_var(--line)]" : "bg-gradient-to-b from-black/55 to-transparent text-white"
+      }`}
+    >
+      <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-2 sm:px-8">
+        <a href="#top" className="shrink-0 font-serif text-2xl font-bold tracking-tight">
           Vegetable
         </a>
-        <nav aria-label="หัวข้อในหน้า" className="ml-auto flex items-center gap-1 overflow-x-auto">
-          {chapters.map((c) => (
-            <a
-              key={c.id}
-              href={`#${c.id}`}
-              aria-current={active === c.id ? "true" : undefined}
-              className={`flex min-h-11 shrink-0 items-center rounded-full px-3 text-lg transition-colors duration-200 ${
-                active === c.id ? "bg-violet-wash font-bold text-violet" : "text-ink-soft hover:text-violet"
-              }`}
-            >
-              {c.label}
-            </a>
-          ))}
+        <nav aria-label="หัวข้อในหน้า" className="ml-auto flex items-center gap-0.5 overflow-x-auto">
+          {chapters.map((c) => {
+            const on = active === c.id;
+            return (
+              <a
+                key={c.id}
+                href={`#${c.id}`}
+                aria-current={on ? "true" : undefined}
+                className={`relative flex min-h-11 shrink-0 items-center px-3 text-base font-medium transition-opacity duration-200 ${
+                  on ? "opacity-100" : "opacity-75 hover:opacity-100"
+                }`}
+              >
+                {c.label}
+                <span
+                  className={`absolute inset-x-3 bottom-1.5 h-0.5 origin-left rounded-full bg-current transition-transform duration-300 ${
+                    on ? "scale-x-100" : "scale-x-0"
+                  }`}
+                  aria-hidden="true"
+                />
+              </a>
+            );
+          })}
         </nav>
       </div>
-      <div className="h-0.5">
-        <div className="h-full origin-left bg-violet" style={{ transform: `scaleX(${progress})` }} />
+      <div className="h-[3px]">
+        <div className="h-full origin-left bg-sun" style={{ transform: `scaleX(${progress})` }} />
       </div>
     </div>
   );

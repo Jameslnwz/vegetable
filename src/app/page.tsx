@@ -1,7 +1,6 @@
 import Image from "next/image";
 import PlantViewer from "@/components/PlantViewer";
 import ChapterNav from "@/components/ChapterNav";
-import PendingBadge from "@/components/PendingBadge";
 import CloneGrowth from "@/components/CloneGrowth";
 import Tristyly from "@/components/Tristyly";
 import FlowerTimeline from "@/components/FlowerTimeline";
@@ -9,13 +8,14 @@ import ProcessingGuide from "@/components/ProcessingGuide";
 import HeroScene from "@/components/HeroScene";
 import MotionRoot from "@/components/MotionRoot";
 import PhotoTile from "@/components/PhotoTile";
-import Ornament, { type OrnamentName } from "@/components/Ornament";
+import CountUp from "@/components/CountUp";
+import ChromosomeChart from "@/components/ChromosomeChart";
+import PendingBadge from "@/components/PendingBadge";
 import { DoubleFertilization, Gametogenesis } from "@/components/ReproVisuals";
 import { Icon, type IconName } from "@/components/ui";
 import { photos, type Photo } from "@/content/photos";
 import {
   work,
-  quickFacts,
   identity,
   problem,
   cloneFacts,
@@ -27,421 +27,442 @@ import {
   bioFacts,
   benefits,
   banner,
+  ledeStats,
+  localNames,
   members,
   memberClass,
   sources,
 } from "@/content/plant";
 import type { CSSProperties, ReactNode } from "react";
 
-// พาสเทลที่ใช้ซ้ำ: การ์ดสถิติ การ์ดประโยชน์ และสมาชิก (สีข้อความผ่าน 4.5:1 บนพื้นของตัวเอง)
-const PASTEL = [
-  { bg: "#efe9fc", ring: "#ddd0f8", fg: "#4b2fa0" },
-  { bg: "#e3f4ea", ring: "#c9e8d5", fg: "#1f6338" },
-  { bg: "#fdf4cf", ring: "#f6e3a1", fg: "#6b4e08" },
-  { bg: "#e1f2ec", ring: "#c4e4d9", fg: "#0f5a4c" },
-];
-
-const BENEFIT_PASTEL: Record<string, number> = { water: 3, coin: 2, leaf: 1, sprout: 0 };
-
 const idx = (i: number) => ({ ["--i" as string]: i }) as CSSProperties;
 
+const BENEFIT_TONE: Record<string, { bg: string; fg: string }> = {
+  water: { bg: "#d4ebe2", fg: "#0f4f3e" },
+  coin: { bg: "#f7e7a8", fg: "#5c4406" },
+  leaf: { bg: "#d8ecd9", fg: "#24573a" },
+  sprout: { bg: "#e4dbf8", fg: "#46309a" },
+};
+
+const SUBTOPICS = [
+  { id: "clone", label: "ไหลและ clone" },
+  { id: "tristyly", label: "ดอกสามแบบ" },
+  { id: "gametes", label: "การสร้างเซลล์สืบพันธุ์" },
+  { id: "fertilization", label: "การปฏิสนธิซ้อน" },
+  { id: "seed", label: "ผลและเมล็ด" },
+];
+
 export default function Home() {
+  const plantCode = identity.find((r) => r.label === "รหัสพรรณไม้")?.value;
+
   return (
     <>
       <MotionRoot />
       <ChapterNav />
 
       <main className="w-full flex-1">
-        {/* ---------- Hero ---------- */}
-        <header id="top" className="scroll-mt-24 mx-auto max-w-6xl px-4 pt-6 sm:px-6 sm:pt-8">
-          <div className="relative isolate flex min-h-[560px] overflow-hidden rounded-[2rem] sm:min-h-[640px]">
-            <Image
-              src={photos.habitus.src}
-              alt={photos.habitus.alt}
-              fill
-              priority
-              placeholder="blur"
-              sizes="(min-width: 1152px) 1104px, 100vw"
-              className="kenburns -z-10 object-cover"
-            />
-            <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/85 via-black/45 to-black/5" aria-hidden="true" />
-            <div className="anim-rise mt-auto max-w-3xl p-6 sm:p-12">
-              <h1 className="text-5xl font-bold leading-[1.05] text-white sm:text-7xl">
-                ผักตบชวา: จากวัชพืช
-                <br />
-                สู่<span className="relative inline-block">
+        {/* ================= Cover ================= */}
+        <header id="top" className="relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-forest text-white">
+          <Image
+            src={photos.habitus.src}
+            alt={photos.habitus.alt}
+            fill
+            priority
+            placeholder="blur"
+            sizes="100vw"
+            className="kenburns -z-10 object-cover"
+          />
+          <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/90 via-black/35 to-black/25" aria-hidden="true" />
+
+          <div className="mx-auto mt-auto w-full max-w-7xl px-4 pb-10 pt-28 sm:px-8 sm:pb-12">
+            <h1 className="font-serif text-[clamp(3rem,8vw,7.25rem)] font-bold leading-[1.08] tracking-tight">
+              <span className="line-in" style={{ ["--l" as string]: 0 }}>ผักตบชวา</span>
+              <span className="line-in" style={{ ["--l" as string]: 1 }}>จากวัชพืช</span>
+              <span className="line-in" style={{ ["--l" as string]: 2 }}>
+                สู่<span className="relative isolate inline-block">
                   ของมีค่า
-                  <span className="absolute inset-x-0 -bottom-1 h-2 rounded-full bg-sun" aria-hidden="true" />
+                  <span className="absolute inset-x-0 bottom-[0.12em] -z-10 h-[0.2em] bg-sun" aria-hidden="true" />
                 </span>
-              </h1>
-              <p className="mt-5 max-w-2xl text-xl text-white/90 sm:text-2xl">{work.lead}</p>
-              <div className="mt-7 flex flex-wrap gap-3">
-                <a
-                  href="#guide"
-                  className="press inline-flex min-h-12 items-center gap-2 rounded-full bg-sun px-6 text-xl font-bold text-ink hover:bg-[#ffd75e]"
-                >
-                  เริ่มดูคู่มือ
-                  <Icon name="next" />
-                </a>
-                <a
-                  href="#identity"
-                  className="press inline-flex min-h-12 items-center rounded-full border border-white/60 bg-black/30 px-6 text-xl font-bold text-white hover:bg-black/50"
-                >
-                  รู้จักผักตบชวา
-                </a>
+              </span>
+            </h1>
+            <div className="line-in mt-8 grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-end" style={{ ["--l" as string]: 3 }}>
+              <div>
+                <p className="max-w-2xl text-xl leading-relaxed text-white/90 sm:text-2xl">{work.lead}</p>
+                <div className="mt-7 flex flex-wrap gap-3">
+                  <a
+                    href="#guide"
+                    className="press inline-flex min-h-12 items-center gap-2 rounded-full bg-sun px-6 text-lg font-semibold text-ink hover:bg-white"
+                  >
+                    เริ่มดูคู่มือ
+                    <Icon name="next" />
+                  </a>
+                  <a
+                    href="#identity"
+                    className="press inline-flex min-h-12 items-center rounded-full border border-white/60 px-6 text-lg font-semibold text-white hover:bg-white hover:text-ink"
+                  >
+                    รู้จักผักตบชวา
+                  </a>
+                </div>
+              </div>
+              <dl className="grid grid-cols-2 gap-x-6 gap-y-3 border-t border-white/30 pt-4 text-base">
+                <div>
+                  <dt className="text-white/70">ผลงาน</dt>
+                  <dd className="font-semibold">{work.name}</dd>
+                </div>
+                <div>
+                  <dt className="text-white/70">รหัสพรรณไม้</dt>
+                  <dd className="tabular font-semibold">{plantCode}</dd>
+                </div>
+                <div>
+                  <dt className="text-white/70">รายวิชา</dt>
+                  <dd className="font-semibold">ชีววิทยา 5 (ว30245)</dd>
+                </div>
+                <div>
+                  <dt className="text-white/70">ผู้จัดทำ</dt>
+                  <dd className="font-semibold">{memberClass} · {work.school.replace(" จังหวัดพิษณุโลก", "")}</dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+          <p className="absolute bottom-2 right-4 text-xs text-white/70">
+            ภาพปก: {photos.habitus.credit?.author}, {photos.habitus.credit?.license}
+          </p>
+        </header>
+
+        {/* ================= Marquee of names ================= */}
+        <div data-loop className="overflow-hidden border-y border-forest-2 bg-forest py-4 text-on-forest" aria-label={`ชื่อเรียกของผักตบชวา: ${localNames.join(", ")}`}>
+          <div className="marquee-track flex w-max items-center" aria-hidden="true">
+            {[0, 1].map((k) => (
+              <div key={k} className="flex items-center">
+                {localNames.map((n) => (
+                  <span key={`${k}-${n}`} className="flex items-center font-serif text-2xl font-semibold sm:text-3xl">
+                    <span className="px-6">{n}</span>
+                    <span className="h-2 w-2 rounded-full bg-sun" />
+                  </span>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ================= Lede ================= */}
+        <section data-reveal className="mx-auto max-w-7xl px-4 py-24 sm:px-8 sm:py-32" aria-label="บทนำ">
+          <div className="grid gap-14 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
+            <p className="reveal-heading font-serif text-3xl font-medium leading-[1.5] text-ink sm:text-[2.6rem]">
+              พืชน้ำลอยน้ำที่มี<span className="text-violet">ดอกสีม่วงสวย</span> เข้ามาในไทยเพราะความงาม
+              แต่โตเร็วจนกลายเป็นวัชพืชที่ขวางลำน้ำทั่วประเทศ งานนี้ชวนดูว่ามันเติบโตอย่างไร และเปลี่ยนมันให้เป็น
+              <span className="bg-[linear-gradient(transparent_62%,var(--sun)_62%)]">ของที่ใช้ได้จริง</span>
+            </p>
+            <dl className="grid content-start gap-0" data-stagger>
+              {ledeStats.map((s, i) => (
+                <div key={s.label} style={idx(i)} className="grid grid-cols-[minmax(0,1fr)] border-t border-line py-5 sm:grid-cols-[13rem_minmax(0,1fr)] sm:gap-6">
+                  <dt className="font-serif text-4xl font-bold text-forest">
+                    {s.prefix && <span className="text-2xl">{s.prefix}</span>}
+                    {s.value !== undefined ? <CountUp to={s.value} /> : s.text}
+                    {s.suffix && <span className="text-2xl">{s.suffix}</span>}
+                  </dt>
+                  <dd className="mt-1 text-lg text-ink-soft sm:mt-2">{s.label}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </section>
+
+        {/* ================= Identity ================= */}
+        <Chapter id="identity" title="รู้จักผักตบชวา" lead="พืชน้ำลอยน้ำ ดอกสวย แต่โตเร็วจนกลายเป็นวัชพืชที่สร้างปัญหาให้แหล่งน้ำทั่วประเทศ">
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+            <PhotoTile id="flowerCloseup" frameClassName="aspect-[4/5]" sizes="(min-width: 1024px) 45vw, 100vw" parallax />
+            <div>
+              <div className="rounded-3xl bg-paper-deep p-6 sm:p-8">
+                <div className="flex flex-wrap items-baseline justify-between gap-2 border-b-2 border-ink pb-3">
+                  <h3 className="text-2xl font-bold">ทะเบียนพรรณไม้</h3>
+                  <p className="text-base text-ink-soft">{work.school}</p>
+                </div>
+                <dl data-stagger>
+                  {identity.map((row, i) => (
+                    <div
+                      key={row.label}
+                      style={idx(i)}
+                      className="grid gap-x-4 gap-y-0.5 border-b border-line py-3 last:border-b-0 sm:grid-cols-[8rem_minmax(0,1fr)]"
+                    >
+                      <dt className="text-base font-medium text-ink-soft">{row.label}</dt>
+                      <dd className="text-lg text-ink">
+                        {row.value ? (
+                          row.label === "รหัสพรรณไม้" ? (
+                            <span className="tabular inline-block whitespace-nowrap rounded-md bg-sun px-2.5 font-serif text-2xl font-bold text-ink">
+                              {row.value}
+                            </span>
+                          ) : (
+                            <span className={row.italic ? "font-serif text-xl italic" : row.label === "ชื่อผลงาน" ? "font-serif text-xl font-bold" : ""}>
+                              {row.value}
+                            </span>
+                          )
+                        ) : (
+                          <PendingBadge />
+                        )}
+                        {row.note && <span className="mt-0.5 block text-base text-ink-soft">{row.note}</span>}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
               </div>
             </div>
           </div>
-
-          <dl className="mt-4 grid gap-4 sm:grid-cols-3" data-stagger>
-            {quickFacts.map((f, i) => (
-              <div
-                key={f.value}
-                style={{ ...idx(i), background: PASTEL[[0, 1, 2][i]].bg }}
-                className="relative overflow-hidden rounded-3xl p-5 sm:p-6"
-              >
-                <span
-                  className="absolute -right-6 -top-6 h-24 w-24 rounded-full"
-                  style={{ background: PASTEL[[0, 1, 2][i]].ring }}
-                  aria-hidden="true"
-                />
-                <dt className="relative text-4xl font-bold" style={{ color: PASTEL[[0, 1, 2][i]].fg }}>
-                  {f.value}
-                </dt>
-                <dd className="relative mt-1 text-lg text-ink-soft">{f.text}</dd>
-              </div>
-            ))}
-          </dl>
-        </header>
-
-        {/* ---------- Identity ---------- */}
-        <Chapter
-          id="identity"
-          ornament="specimen"
-          title="รู้จักผักตบชวา"
-          lead="พืชน้ำลอยน้ำ ดอกสวย แต่โตเร็วจนกลายเป็นวัชพืชที่สร้างปัญหาให้แหล่งน้ำทั่วประเทศ"
-        >
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
-            <div className="overflow-hidden rounded-3xl border border-line bg-paper shadow-[0_18px_40px_-30px_rgb(16_36_31/0.5)]">
-              <div className="flex flex-wrap items-baseline justify-between gap-2 bg-gradient-to-r from-[#0f5a4c] to-[#1d8a70] px-6 py-4 text-white">
-                <p className="text-2xl font-bold">ทะเบียนพรรณไม้</p>
-                <p className="text-lg text-white/90">{work.school}</p>
-              </div>
-              <dl className="px-6" data-stagger>
-                {identity.map((row, i) => (
-                  <div
-                    key={row.label}
-                    style={idx(i)}
-                    className="grid gap-x-3 gap-y-0.5 border-b border-line py-3.5 last:border-b-0 sm:grid-cols-[8.5rem_minmax(0,1fr)]"
-                  >
-                    <dt className="text-lg text-ink-soft">{row.label}</dt>
-                    <dd className="text-xl text-ink">
-                      {row.value ? (
-                        row.label === "รหัสพรรณไม้" ? (
-                          <span className="tabular inline-block whitespace-nowrap rounded-lg bg-violet-wash px-3 py-0.5 text-2xl font-bold tracking-wide text-violet">
-                            {row.value}
-                          </span>
-                        ) : (
-                          <span className={row.italic ? "italic" : row.label === "ชื่อผลงาน" ? "font-bold" : ""}>{row.value}</span>
-                        )
-                      ) : (
-                        <PendingBadge />
-                      )}
-                      {row.note && <span className="mt-1 block text-lg text-ink-soft">{row.note}</span>}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
-
-            <div className="grid auto-rows-[190px] grid-cols-2 gap-3 sm:auto-rows-[220px] sm:grid-cols-3">
-              <PhotoTile id="flowerCloseup" className="col-span-2 row-span-2" sizes="(min-width: 1024px) 34vw, 100vw" />
-              <PhotoTile id="flowerOnWater" className="row-span-2 max-sm:col-span-2 max-sm:row-span-1" />
-              <PhotoTile id="petioleSection" className="row-span-2 max-sm:row-span-1" />
-              <PhotoTile id="flowerSpike" className="max-sm:row-span-1" />
-              <PhotoTile id="groupPlantCode" className="max-sm:col-span-2 max-sm:row-span-2 sm:row-span-1" />
-            </div>
+          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            <PhotoTile id="flowerOnWater" frameClassName="aspect-square" />
+            <PhotoTile id="flowerSpike" frameClassName="aspect-square" />
+            <PhotoTile id="petioleSection" frameClassName="aspect-square" />
+            <PhotoTile id="groupPlantCode" frameClassName="aspect-square" />
           </div>
         </Chapter>
 
-        {/* ---------- Structure viewer ---------- */}
+        {/* ================= Structure ================= */}
         <Chapter
           id="structure"
-          tone="mint"
-          ornament="lens"
+          tone="deep"
           title="โครงสร้างของต้นผักตบชวา"
           lead='กดที่จุดในภาพหรือชื่อส่วนเพื่ออ่านรายละเอียด ใช้ปุ่มซูมเพื่อดูใกล้ ๆ หรือกด "ดูโครงสร้าง" เพื่อแสดงชื่อทุกส่วน'
         >
-          <div className="rounded-3xl bg-paper p-4 shadow-[0_18px_40px_-30px_rgb(16_36_31/0.5)] sm:p-8">
+          <div className="rounded-3xl bg-paper p-4 shadow-[0_30px_60px_-40px_rgb(18_24_21/0.45)] sm:p-8">
             <PlantViewer />
           </div>
         </Chapter>
 
-        {/* ---------- Problem: the deep band ---------- */}
+        {/* ================= Problem: feature spread ================= */}
         <section
           id="problem"
           aria-labelledby="problem-title"
           data-reveal
-          className="relative scroll-mt-16 overflow-hidden bg-teal-deep py-20 text-on-deep sm:py-28"
+          className="relative scroll-mt-16 overflow-hidden bg-forest py-24 text-on-forest sm:py-32"
         >
-          <div
-            className="pointer-events-none absolute -left-40 -top-40 h-[520px] w-[520px] rounded-full bg-[#1d4a3f] opacity-60 blur-3xl"
-            aria-hidden="true"
-          />
-          <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-            <PhotoTile id="bloomField" className="h-[420px] sm:h-[560px]" sizes="(min-width: 1024px) 45vw, 100vw" />
-            <div>
-              <div className="reveal-heading">
-                <Ornament name="river" tone="#f5c542" />
-                <h2 id="problem-title" className="mt-3 text-4xl font-bold sm:text-6xl">
-                  {problem.title}
-                </h2>
-                <p className="mt-4 text-xl text-on-deep-soft sm:text-2xl">{problem.intro}</p>
+          <div className="mx-auto max-w-7xl px-4 sm:px-8">
+            <div className="rule-draw h-px w-full bg-on-forest/30" aria-hidden="true" />
+            <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-start">
+              <PhotoTile
+                id="bloomField"
+                frameClassName="aspect-[3/4]"
+                sizes="(min-width: 1024px) 42vw, 100vw"
+                tone="forest"
+                parallax
+                className="lg:sticky lg:top-24"
+              />
+              <div>
+                <div className="reveal-heading">
+                  <h2 id="problem-title" className="text-[clamp(2.6rem,6vw,5rem)] font-bold leading-[1.1]">
+                    {problem.title}
+                  </h2>
+                  <p className="mt-6 max-w-2xl text-xl leading-relaxed text-on-forest-soft sm:text-2xl">{problem.intro}</p>
+                </div>
+                <ol className="mt-12" data-stagger>
+                  {problem.timeline.map((t, i) => (
+                    <li key={t.when} style={idx(i)} className="grid gap-x-6 border-t border-on-forest/20 py-6 sm:grid-cols-[9rem_minmax(0,1fr)]">
+                      <span className="tabular font-serif text-4xl font-bold text-sun">{t.when}</span>
+                      <span className="mt-1 text-xl leading-relaxed">{t.text}</span>
+                    </li>
+                  ))}
+                </ol>
               </div>
-              <ol className="mt-8 border-t border-white/15" data-stagger>
-                {problem.timeline.map((t, i) => (
-                  <li key={t.when} style={idx(i)} className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-4 border-b border-white/15 py-4">
-                    <span className="tabular text-2xl font-bold text-sun">{t.when}</span>
-                    <span className="text-xl text-on-deep">{t.text}</span>
-                  </li>
-                ))}
-              </ol>
             </div>
           </div>
         </section>
 
-        {/* ---------- Reproduction ---------- */}
+        {/* ================= Reproduction ================= */}
         <Chapter
           id="reproduction"
-          tone="lavender"
-          ornament="cells"
+          tone="violet"
           title="ผักตบชวาสืบพันธุ์อย่างไร"
           lead="สืบพันธุ์ได้ทั้งแบบไม่อาศัยเพศและแบบอาศัยเพศ กดเล่นแอนิเมชันในแต่ละหัวข้อเพื่อดูทีละขั้น"
         >
-          <ol className="mb-10 flex flex-wrap gap-2" aria-label="หัวข้อย่อย">
-            {[
-              ["clone", "ไหลและ clone", "#1f6338"],
-              ["tristyly", "ดอกสามแบบ", "#4b2fa0"],
-              ["gametes", "การสร้างเซลล์สืบพันธุ์", "#a3245c"],
-              ["fertilization", "การปฏิสนธิซ้อน", "#9a4a0c"],
-              ["seed", "ผลและเมล็ด", "#0f5a4c"],
-            ].map(([id, label, color], i) => (
-              <li key={id}>
-                <a href={`#${id}`} className="press flex min-h-11 items-center gap-2 rounded-full bg-paper py-1 pl-1.5 pr-4 text-lg shadow-sm hover:shadow-md">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full text-base font-bold text-white" style={{ background: color }}>
-                    {i + 1}
-                  </span>
-                  {label}
-                </a>
-              </li>
-            ))}
-          </ol>
+          <nav aria-label="หัวข้อย่อยการสืบพันธุ์" className="mb-12">
+            <ol className="flex flex-wrap gap-2">
+              {SUBTOPICS.map((s, i) => (
+                <li key={s.id}>
+                  <a href={`#${s.id}`} className="press flex min-h-11 items-center gap-3 rounded-full border border-ink/15 bg-paper py-1 pl-1.5 pr-5 text-base font-medium hover:border-violet hover:text-violet">
+                    <span className="tabular flex h-8 w-8 items-center justify-center rounded-full bg-ink font-serif text-sm font-bold text-paper">{i + 1}</span>
+                    {s.label}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </nav>
 
-          <Card id="clone" n={1} color="#1f6338" title="ไหลและ clone: สาเหตุหลักของการระบาด">
-            <p className="max-w-3xl text-xl text-ink">
+          <Article id="clone" n={1} title="ไหลและ clone: สาเหตุหลักของการระบาด">
+            <p className="max-w-3xl text-xl leading-relaxed">
               ตาข้างของต้นแม่เจริญเป็น<strong> ไหล (stolon) </strong>สีม่วงที่ทอดยาวในแนวนอน ปลายไหลเกิด
               <strong> ต้นลูก </strong>ที่มีพันธุกรรมเหมือนต้นแม่ทุกประการ เมื่อไหลขาด ต้นลูกก็ลอยไปเป็นต้นใหม่ได้ทันที
               โดยไม่ต้องรอดอกหรือแมลงผสมเกสร
             </p>
-            <FactRow facts={cloneFacts} pastel={1} />
-            <div className="mt-6">
+            <FactRow facts={cloneFacts} />
+            <div className="mt-8">
               <CloneGrowth />
             </div>
-          </Card>
+          </Article>
 
-          <Card id="tristyly" n={2} color="#4b2fa0" title="ดอกสามแบบ (tristyly)">
-            <p className="max-w-3xl text-xl text-ink">
+          <Article id="tristyly" n={2} title="ดอกสามแบบ (tristyly)">
+            <p className="max-w-3xl text-xl leading-relaxed">
               ดอกผักตบชวามีกลีบรวม 6 กลีบ เกสรเพศผู้ 6 อันเรียงเป็น 2 ระดับ และรังไข่ 3 ช่อง ต้นหนึ่งจะมีดอกได้เพียง 1 ใน 3 แบบ
               ต่างกันที่ความยาวก้านเกสรเพศเมีย
             </p>
-            <div className="mt-6">
+            <div className="mt-8">
               <Tristyly />
             </div>
-            <p className="mt-4 flex max-w-3xl gap-3 rounded-2xl bg-sun-wash p-4 text-lg text-ink">
+            <p className="mt-5 flex max-w-3xl gap-3 rounded-2xl bg-sun-wash p-5 text-lg">
               <span className="mt-1 shrink-0 text-sun-ink">
                 <Icon name="sprout" />
               </span>
               {tristylyActivity}
             </p>
-          </Card>
+          </Article>
 
-          <Card id="gametes" n={3} color="#a3245c" title="การสร้างเซลล์สืบพันธุ์">
-            <p className="max-w-3xl text-xl text-ink">
+          <Article id="gametes" n={3} title="การสร้างเซลล์สืบพันธุ์">
+            <p className="max-w-3xl text-xl leading-relaxed">
               ผักตบชวามีโครโมโซม 2n = 32 เซลล์สืบพันธุ์จึงมี n = 16 เลือกดูฝั่งเพศผู้หรือเพศเมีย แล้วกดถัดไปหรือเล่นอัตโนมัติ
             </p>
-            <div className="mt-6">
+            <div className="mt-8">
               <Gametogenesis />
             </div>
-          </Card>
+          </Article>
 
-          <Card id="fertilization" n={4} color="#9a4a0c" title="การปฏิสนธิซ้อน (double fertilization)">
-            <p className="max-w-3xl text-xl text-ink">
+          <Article id="fertilization" n={4} title="การปฏิสนธิซ้อน (double fertilization)">
+            <p className="max-w-3xl text-xl leading-relaxed">
               ละอองเรณูตกบนยอดเกสรเพศเมีย แล้วงอกหลอดละอองเรณูลงไปถึง ovule sperm 2 เซลล์ผสมกับเซลล์ใน embryo sac
               คนละเซลล์ จึงเรียกว่าการปฏิสนธิซ้อน
             </p>
-            <ul className="mt-5 grid gap-3 md:grid-cols-2">
-              {fertilizationEquations.map((eq, i) => (
-                <li key={eq.right} className={`rounded-2xl p-5 ${i === 0 ? "bg-[#fbe3ee]" : "bg-[#fdebd6]"}`}>
-                  <p className="text-lg text-ink">{eq.left}</p>
-                  <p className={`mt-1 text-2xl font-bold ${i === 0 ? "text-[#8f2a5c]" : "text-[#8a4a12]"}`}>→ {eq.right}</p>
-                  <p className="text-lg text-ink-soft">{eq.note}</p>
+            <ul className="mt-6 grid gap-4 md:grid-cols-2">
+              {fertilizationEquations.map((eq) => (
+                <li key={eq.right} className="border-t-2 border-ink pt-4">
+                  <p className="text-lg">{eq.left}</p>
+                  <p className="mt-1 font-serif text-3xl font-bold text-violet">→ {eq.right}</p>
+                  <p className="text-base text-ink-soft">{eq.note}</p>
                 </li>
               ))}
             </ul>
-            <div className="mt-6">
+            <div className="mt-8">
               <DoubleFertilization />
             </div>
-          </Card>
+          </Article>
 
-          <Card id="seed" n={5} color="#0f5a4c" title="จากดอกหนึ่งวัน สู่เมล็ดที่รอได้หลายสิบปี">
-            <p className="max-w-3xl text-xl text-ink">เลื่อนแถบเวลาเพื่อดูว่าเกิดอะไรขึ้นหลังดอกบาน</p>
-            <FactRow facts={seedFacts} pastel={3} />
-            <div className="mt-6">
+          <Article id="seed" n={5} title="จากดอกหนึ่งวัน สู่เมล็ดที่รอได้หลายสิบปี">
+            <p className="max-w-3xl text-xl leading-relaxed">เลื่อนแถบเวลาเพื่อดูว่าเกิดอะไรขึ้นหลังดอกบาน</p>
+            <FactRow facts={seedFacts} />
+            <div className="mt-8">
               <FlowerTimeline />
             </div>
-          </Card>
+          </Article>
 
-          <div className="mt-8 grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
-            <div className="rounded-3xl bg-paper p-6 shadow-[0_18px_40px_-30px_rgb(16_36_31/0.5)] sm:p-8">
-              <h3 className="text-3xl font-bold">สรุปจำนวนโครโมโซมในแต่ละระยะ</h3>
+          <div className="mt-16 grid grid-cols-[minmax(0,1fr)] gap-10 rounded-3xl bg-paper p-6 sm:p-10 lg:grid-cols-2">
+            <div>
+              <h3 className="text-3xl font-bold">สรุปจำนวนโครโมโซม</h3>
               <p className="mt-2 text-lg text-ink-soft">{chromosomeNote}</p>
-              <div className="mt-4 overflow-x-auto">
-                <table className="w-full min-w-[26rem] border-collapse text-left text-xl">
-                  <thead>
-                    <tr className="border-b-2 border-ink/80">
-                      <th scope="col" className="py-2 pr-4 font-bold">โครงสร้าง</th>
-                      <th scope="col" className="py-2 pr-4 font-bold">ระดับ</th>
-                      <th scope="col" className="py-2 text-right font-bold">โครโมโซม</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {chromosomeTable.map((r) => (
-                      <tr key={r.structure} className="border-b border-line">
-                        <td className="py-2.5 pr-4">{r.structure}</td>
-                        <td className="py-2.5 pr-4">
-                          <span
-                            className={`inline-block rounded-full px-3 font-bold ${
-                              r.level === "n"
-                                ? "bg-teal-wash text-teal"
-                                : r.level === "2n"
-                                  ? "bg-violet-wash text-violet"
-                                  : "bg-sun-wash text-sun-ink"
-                            }`}
-                          >
-                            {r.level}
-                          </span>
-                        </td>
-                        <td className="tabular py-2.5 text-right font-bold text-violet">{r.count}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="mt-6">
+                <ChromosomeChart />
               </div>
             </div>
-            <ul className="grid gap-4" data-stagger>
-              {bioFacts.map((f, i) => (
-                <li key={f.title} style={{ ...idx(i), background: PASTEL[[0, 1, 2][i]].bg }} className="rounded-3xl p-5">
-                  <h3 className="text-2xl font-bold" style={{ color: PASTEL[[0, 1, 2][i]].fg }}>
-                    {f.title}
-                  </h3>
-                  <p className="mt-1 text-lg text-ink">{f.text}</p>
-                </li>
-              ))}
-            </ul>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[24rem] border-collapse text-left text-lg">
+                <caption className="sr-only">ตารางจำนวนโครโมโซมในแต่ละโครงสร้าง</caption>
+                <thead>
+                  <tr className="border-b-2 border-ink">
+                    <th scope="col" className="py-2 pr-4 font-semibold">โครงสร้าง</th>
+                    <th scope="col" className="py-2 pr-4 font-semibold">ระดับ</th>
+                    <th scope="col" className="py-2 text-right font-semibold">โครโมโซม</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {chromosomeTable.map((r) => (
+                    <tr key={r.structure} className="border-b border-line">
+                      <td className="py-3 pr-4">{r.structure}</td>
+                      <td className="py-3 pr-4 font-serif font-bold">{r.level}</td>
+                      <td className="tabular py-3 text-right font-semibold">{r.count}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
+
+          <ul className="mt-12 grid gap-8 md:grid-cols-3" data-stagger>
+            {bioFacts.map((f, i) => (
+              <li key={f.title} style={idx(i)} className="border-t-2 border-violet pt-5">
+                <h3 className="text-2xl font-bold">{f.title}</h3>
+                <p className="mt-2 text-lg leading-relaxed text-ink-soft">{f.text}</p>
+              </li>
+            ))}
+          </ul>
         </Chapter>
 
-        {/* ---------- Processing guide ---------- */}
-        <Chapter
-          id="guide"
-          ornament="basket"
-          title="คู่มือแปรรูป: เลือกวิธีที่อยากลองทำ"
-          lead="แต่ละวิธีมีวัสดุ ขั้นตอน และข้อควรระวัง ทำตามได้ทีละข้อ"
-        >
+        {/* ================= Processing guide ================= */}
+        <Chapter id="guide" title="คู่มือแปรรูป: เลือกวิธีที่อยากลองทำ" lead="แต่ละวิธีมีวัสดุ ขั้นตอน และข้อควรระวัง ทำตามได้ทีละข้อ">
           <ProcessingGuide />
         </Chapter>
 
-        {/* ---------- Photo banner ---------- */}
-        <section data-reveal className="relative isolate overflow-hidden" aria-labelledby="banner-title">
-          <div className="banner-photo absolute inset-0 -z-10">
+        {/* ================= Banner ================= */}
+        <section data-reveal className="relative isolate overflow-hidden bg-forest" aria-labelledby="banner-title">
+          <div className="banner-photo parallax absolute inset-0 -z-10">
             <Image src={photos.inleLake.src} alt={photos.inleLake.alt} fill sizes="100vw" placeholder="blur" className="object-cover" />
           </div>
-          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/80 via-black/50 to-black/10" aria-hidden="true" />
-          <div className="mx-auto max-w-6xl px-4 py-28 sm:px-6 sm:py-40">
-            <div className="reveal-heading max-w-2xl">
-              <h2 id="banner-title" className="text-5xl font-bold leading-[1.05] text-white sm:text-7xl">
+          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/85 via-black/55 to-black/10" aria-hidden="true" />
+          <div className="mx-auto max-w-7xl px-4 py-32 sm:px-8 sm:py-48">
+            <div className="reveal-heading max-w-3xl">
+              <h2 id="banner-title" className="text-[clamp(2.6rem,6.5vw,5.6rem)] font-bold leading-[1.12] text-white">
                 {banner.title}
               </h2>
-              <p className="mt-5 text-xl text-white/90 sm:text-2xl">{banner.text}</p>
+              <p className="mt-6 max-w-xl text-xl leading-relaxed text-white/90 sm:text-2xl">{banner.text}</p>
             </div>
           </div>
-          <p className="absolute bottom-3 right-4 text-base text-white/80">{photos.inleLake.caption}</p>
+          <p className="absolute bottom-3 right-4 text-xs text-white/75">
+            {photos.inleLake.caption} · ภาพ: {photos.inleLake.credit?.author}, {photos.inleLake.credit?.license}
+          </p>
         </section>
 
-        {/* ---------- Benefits ---------- */}
-        <Chapter id="benefits" ornament="hands" title={`ประโยชน์แท้แก่มหาชน: ${benefits.title}`} lead={benefits.intro}>
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" data-stagger>
+        {/* ================= Benefits ================= */}
+        <Chapter id="benefits" title={`ประโยชน์แท้แก่มหาชน`} lead={`${benefits.title} ${benefits.intro}`}>
+          <ul className="grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-4" data-stagger>
             {benefits.items.map((b, i) => {
-              const c = PASTEL[BENEFIT_PASTEL[b.icon]];
+              const c = BENEFIT_TONE[b.icon];
               return (
-                <li key={b.title} style={{ ...idx(i), background: c.bg }} className="relative overflow-hidden rounded-3xl p-6">
-                  <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-paper" style={{ color: c.fg }}>
-                    <Icon name={b.icon as IconName} size={28} />
+                <li key={b.title} style={idx(i)} className="border-t-2 border-ink pt-6">
+                  <span className="flex h-14 w-14 items-center justify-center rounded-full" style={{ background: c.bg, color: c.fg }}>
+                    <Icon name={b.icon as IconName} size={26} />
                   </span>
-                  <h3 className="mt-4 text-3xl font-bold" style={{ color: c.fg }}>
-                    {b.title}
-                  </h3>
-                  <p className="mt-1 text-xl text-ink">{b.text}</p>
+                  <h3 className="mt-5 text-3xl font-bold">{b.title}</h3>
+                  <p className="mt-2 text-lg leading-relaxed text-ink-soft">{b.text}</p>
                 </li>
               );
             })}
           </ul>
         </Chapter>
 
-        {/* ---------- Team ---------- */}
+        {/* ================= Credits ================= */}
         <Chapter
           id="credits"
-          tone="lavender"
-          ornament="pencil"
+          tone="sand"
           title="คณะผู้จัดทำ"
           lead={`นักเรียนชั้นมัธยมศึกษาปีที่ 6/3 ${work.course} ${work.unit} ${work.school}`}
         >
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" data-stagger>
-            {members.map((m, i) => {
-              const c = PASTEL[i % 4];
-              const first = m.name.replace(/^นาย/, "").charAt(0);
-              return (
-                <li key={m.name} style={idx(i)} className="flex items-center gap-4 rounded-3xl bg-paper p-4 shadow-[0_14px_30px_-24px_rgb(16_36_31/0.6)]">
-                  <span
-                    className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-3xl font-bold"
-                    style={{ background: c.bg, color: c.fg }}
-                    aria-hidden="true"
-                  >
-                    {first}
-                  </span>
-                  <span>
-                    <span className="block text-xl font-bold leading-tight">{m.name}</span>
-                    <span className="tabular block text-lg text-ink-soft">
-                      {memberClass} เลขที่ {m.number}
-                    </span>
-                  </span>
-                </li>
-              );
-            })}
+          <ul className="grid gap-x-10 sm:grid-cols-2" data-stagger>
+            {members.map((m, i) => (
+              <li key={m.name} style={idx(i)} className="flex items-baseline justify-between gap-4 border-t border-ink/20 py-5">
+                <span className="font-serif text-2xl font-bold sm:text-3xl">{m.name}</span>
+                <span className="tabular shrink-0 text-lg text-ink-soft">
+                  {memberClass} เลขที่ {m.number}
+                </span>
+              </li>
+            ))}
           </ul>
 
-          <div className="mt-12 grid gap-8 rounded-3xl bg-paper p-6 sm:p-8 lg:grid-cols-2">
+          <div className="mt-16 grid gap-10 text-base lg:grid-cols-2">
             <div>
-              <h3 className="text-2xl font-bold">ที่มาของข้อมูล</h3>
-              <ul className="mt-3 list-disc space-y-2 pl-6 text-lg text-ink-soft marker:text-violet">
+              <h3 className="text-xl font-bold">ที่มาของข้อมูล</h3>
+              <ul className="mt-3 list-disc space-y-2 pl-5 leading-relaxed text-ink-soft marker:text-violet">
                 {sources.map((s) => (
                   <li key={s}>{s}</li>
                 ))}
               </ul>
             </div>
             <div>
-              <h3 className="text-2xl font-bold">ที่มาของภาพถ่าย</h3>
-              <ul className="mt-3 space-y-2 text-lg text-ink-soft">
+              <h3 className="text-xl font-bold">ที่มาของภาพถ่าย</h3>
+              <ul className="mt-3 space-y-2 leading-relaxed text-ink-soft">
                 {(Object.values(photos) as Photo[]).map((p) => (
                   <li key={p.caption}>
                     <span className="text-ink">{p.caption}</span>
@@ -449,7 +470,7 @@ export default function Home() {
                     {p.credit ? (
                       <>
                         {p.credit.author},{" "}
-                        <a href={p.credit.fileUrl} target="_blank" rel="noreferrer" className="underline underline-offset-4 hover:text-violet">
+                        <a href={p.credit.fileUrl} target="_blank" rel="noreferrer" className="underline hover:text-violet">
                           Wikimedia Commons
                         </a>{" "}
                         ({p.credit.license})
@@ -465,107 +486,92 @@ export default function Home() {
         </Chapter>
       </main>
 
-      <footer className="relative bg-teal-deep text-on-deep-soft">
-        <div className="bg-paper">
+      {/* ================= Footer ================= */}
+      <footer className="relative bg-forest text-on-forest-soft">
+        <div className="bg-[#efeadd]">
           <HeroScene />
         </div>
-        <div className="mx-auto flex max-w-6xl flex-wrap items-end justify-between gap-4 px-4 py-10 sm:px-6">
-          <div>
-            <p className="text-4xl font-bold text-on-deep">{work.name}</p>
-            <p className="mt-1 text-lg">
-              {work.title} · จัดทำเพื่อการศึกษา · {work.course} · {work.school}
+        <div className="mx-auto max-w-7xl px-4 pb-10 pt-12 sm:px-8">
+          <p className="font-serif text-[clamp(4rem,17vw,15rem)] font-bold leading-[0.95] tracking-tight text-on-forest" aria-hidden="true">
+            Vegetable
+          </p>
+          <div className="mt-8 flex flex-wrap items-end justify-between gap-6 border-t border-on-forest/20 pt-6">
+            <p className="max-w-2xl text-base leading-relaxed">
+              <span className="font-semibold text-on-forest">{work.name}</span> · {work.title} · จัดทำเพื่อการศึกษา ·{" "}
+              {work.course} · {work.school}
             </p>
+            <a
+              href="#top"
+              className="press inline-flex min-h-11 items-center gap-2 rounded-full bg-sun px-5 text-base font-semibold text-ink hover:bg-white"
+            >
+              กลับขึ้นด้านบน
+            </a>
           </div>
-          <a
-            href="#top"
-            className="press inline-flex min-h-11 items-center gap-2 rounded-full border border-on-deep-soft/50 px-5 text-lg text-on-deep hover:bg-white/10"
-          >
-            กลับขึ้นด้านบน
-          </a>
         </div>
       </footer>
     </>
   );
 }
 
-type Tone = "white" | "mint" | "lavender";
+type Tone = "paper" | "deep" | "violet" | "sand";
 
 const TONE: Record<Tone, string> = {
-  white: "",
-  mint: "bg-gradient-to-b from-paper via-teal-wash/70 to-paper",
-  lavender: "bg-gradient-to-b from-paper via-violet-band to-paper",
+  paper: "",
+  deep: "bg-paper-deep",
+  violet: "bg-violet-band",
+  sand: "bg-[#efeadd]",
 };
 
 function Chapter({
   id,
   title,
   lead,
-  ornament,
-  tone = "white",
+  tone = "paper",
   children,
 }: {
   id: string;
   title: string;
   lead?: string;
-  ornament: OrnamentName;
   tone?: Tone;
   children: ReactNode;
 }) {
   return (
-    <section
-      id={id}
-      aria-labelledby={`${id}-title`}
-      data-reveal
-      data-loop
-      className={`relative scroll-mt-16 py-20 sm:py-24 ${TONE[tone]}`}
-    >
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="reveal-heading flex flex-wrap items-end justify-between gap-x-10 gap-y-3">
-          <div className="flex items-center gap-4">
-            <Ornament name={ornament} />
-            <h2 id={`${id}-title`} className="text-4xl font-bold text-ink sm:text-6xl">
-              {title}
-            </h2>
-          </div>
-          {lead && <p className="max-w-xl text-xl text-ink-soft sm:text-2xl lg:text-right">{lead}</p>}
+    <section id={id} aria-labelledby={`${id}-title`} data-reveal data-loop className={`relative scroll-mt-16 py-24 sm:py-32 ${TONE[tone]}`}>
+      <div className="mx-auto max-w-7xl px-4 sm:px-8">
+        <div className="rule-draw h-px w-full bg-ink/25" aria-hidden="true" />
+        <div className="reveal-heading mt-8 grid gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:items-end">
+          <h2 id={`${id}-title`} className="text-[clamp(2.5rem,5.5vw,4.6rem)] font-bold leading-[1.12] text-ink">
+            {title}
+          </h2>
+          {lead && <p className="max-w-xl text-xl leading-relaxed text-ink-soft">{lead}</p>}
         </div>
-        <div className="mt-10">{children}</div>
+        <div className="mt-14">{children}</div>
       </div>
     </section>
   );
 }
 
-function Card({ id, n, color, title, children }: { id: string; n: number; color: string; title: string; children: ReactNode }) {
+function Article({ id, n, title, children }: { id: string; n: number; title: string; children: ReactNode }) {
   return (
-    <article
-      id={id}
-      className="mt-6 scroll-mt-24 rounded-3xl bg-paper p-5 shadow-[0_18px_40px_-30px_rgb(16_36_31/0.5)] first:mt-0 sm:p-8"
-    >
-      <h3 className="mb-4 flex items-center gap-3 text-3xl font-bold text-ink sm:text-4xl">
-        <span
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-2xl text-white shadow-md"
-          style={{ background: color }}
-          aria-hidden="true"
-        >
+    <article id={id} className="mt-8 scroll-mt-24 rounded-3xl bg-paper p-5 first:mt-0 sm:p-10">
+      <div className="mb-6 flex items-start gap-5">
+        <span className="tabular font-serif text-5xl font-bold leading-none text-violet sm:text-6xl" aria-hidden="true">
           {n}
         </span>
-        {title}
-      </h3>
+        <h3 className="pt-1 text-3xl font-bold leading-tight sm:text-4xl">{title}</h3>
+      </div>
       {children}
     </article>
   );
 }
 
-function FactRow({ facts, pastel }: { facts: { value: string; text: string }[]; pastel: number }) {
-  const c = PASTEL[pastel];
+function FactRow({ facts }: { facts: { value: string; text: string }[] }) {
   return (
-    <dl className="mt-6 grid gap-3 sm:grid-cols-3" data-stagger>
+    <dl className="mt-8 grid gap-6 sm:grid-cols-3" data-stagger>
       {facts.map((f, i) => (
-        <div key={f.value} style={{ ...idx(i), background: c.bg }} className="rounded-2xl p-4">
-          <dt className="tabular text-3xl font-bold" style={{ color: c.fg }}>
-            {f.value}
-          </dt>
-          <dd className="text-lg text-ink-soft">{f.text}</dd>
+        <div key={f.value} style={idx(i)} className="border-t-2 border-ink pt-3">
+          <dt className="tabular font-serif text-3xl font-bold text-violet">{f.value}</dt>
+          <dd className="mt-1 text-base text-ink-soft">{f.text}</dd>
         </div>
       ))}
     </dl>

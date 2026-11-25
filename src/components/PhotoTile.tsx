@@ -4,45 +4,47 @@ import Image from "next/image";
 import { useRef } from "react";
 import { photos, type Photo, type PhotoKey } from "@/content/photos";
 
-// รูปถ่ายพร้อมคำบรรยาย กดเพื่อดูรูปใหญ่และเครดิต
+// รูปถ่ายแบบนิตยสาร: กดเพื่อดูรูปใหญ่พร้อมเครดิต
+// caption="below" วางคำบรรยายใต้รูป (ค่าเริ่มต้น), "overlay" วางบนรูป
 export default function PhotoTile({
   id,
   className = "",
-  sizes = "(min-width: 1024px) 30vw, 50vw",
-  priority = false,
+  frameClassName = "aspect-[4/3]",
+  sizes = "(min-width: 1024px) 30vw, 100vw",
+  caption = "below",
+  parallax = false,
+  tone = "paper",
 }: {
   id: PhotoKey;
   className?: string;
+  frameClassName?: string;
   sizes?: string;
-  priority?: boolean;
+  caption?: "below" | "overlay" | "none";
+  parallax?: boolean;
+  tone?: "paper" | "forest";
 }) {
   const photo: Photo = photos[id];
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const credit = photo.credit ? `ภาพ: ${photo.credit.author} (${photo.credit.license})` : "ภาพ: คณะผู้จัดทำ";
 
   return (
-    <>
+    <figure className={className}>
       <button
         type="button"
         onClick={() => dialogRef.current?.showModal()}
-        className={`photo-frame group relative block cursor-zoom-in overflow-hidden rounded-3xl bg-paper-deep text-left shadow-[0_14px_30px_-18px_rgb(16_36_31/0.55)] ${className}`}
+        className={`photo-frame group relative block w-full cursor-zoom-in overflow-hidden rounded-2xl bg-paper-deep text-left ${
+          parallax ? "parallax" : ""
+        } ${frameClassName}`}
         aria-label={`ดูรูปขนาดใหญ่: ${photo.caption}`}
       >
-        <Image
-          src={photo.src}
-          alt={photo.alt}
-          fill
-          sizes={sizes}
-          placeholder="blur"
-          priority={priority}
-          className="object-cover"
-        />
+        <Image src={photo.src} alt={photo.alt} fill sizes={sizes} placeholder="blur" className="object-cover" />
+        {caption === "overlay" && (
+          <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-4 pb-3 pt-12 text-base leading-snug text-white">
+            {photo.caption}
+          </span>
+        )}
         <span
-          className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/45 to-transparent px-4 pb-3 pt-12 text-lg leading-snug text-white"
-        >
-          {photo.caption}
-        </span>
-        <span
-          className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-xl bg-black/45 text-white opacity-90 transition-opacity duration-200 group-hover:opacity-100"
+          className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-black/45 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100"
           aria-hidden="true"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -50,47 +52,48 @@ export default function PhotoTile({
           </svg>
         </span>
       </button>
+      {caption === "below" && (
+        <figcaption className={`mt-2.5 text-sm leading-relaxed ${tone === "forest" ? "text-on-forest-soft" : "text-ink-soft"}`}>
+          <span className={tone === "forest" ? "text-on-forest" : "text-ink"}>{photo.caption}</span>
+          <span className="mx-1.5" aria-hidden="true">·</span>
+          {credit}
+        </figcaption>
+      )}
 
       <dialog
         ref={dialogRef}
-        className="lightbox m-auto w-[min(92vw,1100px)] rounded-3xl bg-paper p-0 text-ink backdrop:cursor-zoom-out"
+        className="lightbox m-auto w-[min(92vw,1100px)] overflow-hidden rounded-3xl bg-paper p-0 text-ink"
         aria-label={photo.caption}
         onClick={(e) => {
           if (e.target === dialogRef.current) dialogRef.current?.close();
         }}
       >
-        <div className="relative">
-          <Image
-            src={photo.src}
-            alt={photo.alt}
-            sizes="92vw"
-            placeholder="blur"
-            className="max-h-[75vh] w-full object-contain bg-black"
-          />
+        <div className="relative bg-black">
+          <Image src={photo.src} alt={photo.alt} sizes="92vw" placeholder="blur" className="max-h-[75vh] w-full object-contain" />
           <form method="dialog">
             <button
               type="submit"
-              className="absolute right-3 top-3 flex min-h-11 items-center gap-1 rounded-full bg-black/60 px-4 text-lg text-white hover:bg-black/80"
+              className="absolute right-3 top-3 flex min-h-11 items-center rounded-full bg-paper px-5 text-base font-semibold text-ink shadow-lg hover:bg-sun"
             >
               ปิด
             </button>
           </form>
         </div>
         <div className="p-5">
-          <p className="text-xl font-bold">{photo.caption}</p>
-          <p className="mt-1 text-lg text-ink-soft">
+          <p className="font-serif text-xl font-bold">{photo.caption}</p>
+          <p className="mt-1 text-base text-ink-soft">
             {photo.credit ? (
               <>
                 ภาพ: {photo.credit.author} ·{" "}
                 {photo.credit.licenseUrl ? (
-                  <a href={photo.credit.licenseUrl} className="underline underline-offset-4" target="_blank" rel="noreferrer">
+                  <a href={photo.credit.licenseUrl} className="underline" target="_blank" rel="noreferrer">
                     {photo.credit.license}
                   </a>
                 ) : (
                   photo.credit.license
                 )}{" "}
                 ·{" "}
-                <a href={photo.credit.fileUrl} className="underline underline-offset-4" target="_blank" rel="noreferrer">
+                <a href={photo.credit.fileUrl} className="underline" target="_blank" rel="noreferrer">
                   Wikimedia Commons
                 </a>
               </>
@@ -100,6 +103,6 @@ export default function PhotoTile({
           </p>
         </div>
       </dialog>
-    </>
+    </figure>
   );
 }
