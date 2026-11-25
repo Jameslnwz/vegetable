@@ -24,10 +24,10 @@ export function PillButton({
       disabled={disabled}
       aria-pressed={pressed}
       aria-label={label}
-      className={`inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full px-4 text-base font-medium transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-40 ${
+      className={`inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full px-4 text-base font-semibold transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-40 ${
         active
-          ? "bg-teal text-paper hover:bg-ink"
-          : "border border-line bg-paper text-ink hover:border-teal hover:text-teal"
+          ? "bg-violet text-white hover:bg-ink"
+          : "border-2 border-line bg-white text-ink hover:border-violet hover:text-violet"
       }`}
     >
       {children}
@@ -67,6 +67,7 @@ export type IconName =
   | "sprout"
   | "clock"
   | "speaker"
+  | "fast"
   | "mute";
 
 const icons: Record<IconName, ReactNode> = {
@@ -112,6 +113,12 @@ const icons: Record<IconName, ReactNode> = {
       <path d="M12 21v-9" />
       <path d="M12 12c0-4-3-6-7-6 0 4 3 6 7 6z" />
       <path d="M12 14c0-3 2.5-5 6-5 0 3-2.5 5-6 5z" />
+    </>
+  ),
+  fast: (
+    <>
+      <path d="M4 6l7 6-7 6z" />
+      <path d="M13 6l7 6-7 6z" />
     </>
   ),
   speaker: (

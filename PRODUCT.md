@@ -38,7 +38,8 @@ Classroom presentation on a projector, read from a distance; individual browsing
 - Content and section order follow the group's own reference artifact (คู่มือแปรรูปผักตบชวา).
 - Font: any clear, highly legible Thai face (the user released the earlier TH Sarabun New requirement).
 - Craft bar: professional, Awwwards-level polish (reference for quality, not a specific look).
-- Visual direction (chosen by the user, standing preference): an editorial nature-documentary magazine. Full-bleed photography, large serif headlines, magazine captions, generous white space; executed straight, without irony.
+- Visual direction (chosen by the user, standing preference since the 2026-11 redesign; replaces the earlier editorial nature-magazine look): "สวยๆงาม abstract มีกราฟฟิคสีสันสดใส ตะลึ่ง แต่ยังไม่รก และอ่านง่าย". The look follows the group's reference artifact (claude.ai/artifact/HZZA5XrWsYhtt78qerRtbX): white page, rounded cards, a colour per topic, and a cover whose background is a photo of the plant ("ผมชอบแบบแรกที่พื้นหลังเป็นรูปผัก"). Vivid abstract cut-paper shapes and short cheeky sticker labels sit on top of that base; body text always sits on a plain ground.
+- Sticker labels may only restate facts already on the site; they live in `stickers` in src/content/plant.ts.
 
 ## Evidence on Hand
 

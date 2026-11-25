@@ -59,14 +59,14 @@ export default function ProcessingGuide() {
               tabIndex={selected ? 0 : -1}
               onClick={() => setActive(i)}
               onKeyDown={onTabKey}
-              className={`min-h-11 cursor-pointer rounded-xl border p-4 text-left transition-colors duration-200 ${
+              className={`min-h-11 cursor-pointer rounded-2xl border-2 p-4 text-left transition-colors duration-200 ${
                 selected
-                  ? "border-teal bg-teal text-paper"
-                  : "border-line bg-paper hover:border-teal"
+                  ? "border-orange bg-orange text-ink"
+                  : "border-line bg-white hover:border-orange"
               }`}
             >
               <span className="block text-lg font-bold">{m.tab}</span>
-              <span className={`block text-base ${selected ? "text-paper/85" : "text-ink-soft"}`}>{m.tabSub}</span>
+              <span className={`block text-base ${selected ? "text-ink/80" : "text-ink-soft"}`}>{m.tabSub}</span>
             </button>
           );
         })}
@@ -77,14 +77,14 @@ export default function ProcessingGuide() {
         role="tabpanel"
         aria-labelledby={`tab-${method.id}`}
         key={method.id}
-        className="anim-rise mt-6 rounded-2xl border border-line bg-paper-deep p-4 sm:p-8"
+        className="anim-rise mt-5 rounded-[2rem] bg-paper-deep p-4 sm:p-8"
       >
         <h3 className="text-3xl font-bold text-ink">{method.title}</h3>
         <p className="mt-3 max-w-3xl text-lg text-ink">{method.intro}</p>
         <ul className="mt-4 flex flex-wrap gap-2 text-base">
-          <li className="rounded-full bg-teal-wash px-3 py-1 text-teal">ระดับ: {method.level}</li>
+          <li className="rounded-full bg-orange px-3 py-1 font-semibold text-ink">ระดับ: {method.level}</li>
           {method.durations.map((d) => (
-            <li key={d} className="inline-flex items-center gap-1.5 rounded-full bg-paper px-3 py-1 text-ink">
+            <li key={d} className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-ink">
               <Icon name="clock" size={16} />
               {d}
             </li>
@@ -117,9 +117,9 @@ export default function ProcessingGuide() {
                 ทำแล้ว {done}/{method.steps.length} ขั้น
               </p>
             </div>
-            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-line">
+            <div className="mt-2 h-2 overflow-hidden rounded-full bg-white">
               <div
-                className="h-full origin-left rounded-full bg-violet transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                className="h-full origin-left rounded-full bg-orange transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
                 style={{ transform: `scaleX(${done / method.steps.length})` }}
               />
             </div>
@@ -142,7 +142,7 @@ export default function ProcessingGuide() {
           </section>
         </div>
 
-        <p role="note" className="mt-8 flex gap-3 rounded-xl border border-danger/40 bg-paper p-4 text-ink">
+        <p role="note" className="mt-8 flex gap-3 rounded-2xl bg-danger-wash p-5 text-ink">
           <span className="mt-1 shrink-0 text-danger">
             <Icon name="alert" />
           </span>
@@ -173,13 +173,13 @@ function CheckRow({
       role="checkbox"
       aria-checked={checked}
       onClick={onToggle}
-      className={`flex min-h-11 w-full cursor-pointer items-start gap-3 rounded-xl border p-3 text-left text-lg transition-colors duration-200 ${
-        checked ? "border-violet/40 bg-violet-wash/60" : "border-line bg-paper hover:border-violet"
+      className={`flex min-h-11 w-full cursor-pointer items-start gap-3 rounded-2xl border-2 p-3 text-left text-lg transition-colors duration-200 ${
+        checked ? "border-orange bg-orange-wash" : "border-transparent bg-white hover:border-orange"
       }`}
     >
       <span
         className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 text-base font-bold transition-colors duration-200 ${
-          checked ? "border-violet bg-violet text-paper" : "border-ink-soft text-ink-soft"
+          checked ? "border-orange bg-orange text-ink" : "border-orange-ink text-orange-ink"
         }`}
         aria-hidden="true"
       >

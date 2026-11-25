@@ -1,125 +1,180 @@
 "use client";
 
 import { useRef, useState, type PointerEvent } from "react";
-import { cloneCaptions } from "@/content/plant";
-import { NarrationControls, useNarratedPlayer, type Seg } from "./NarratedPlayer";
-import { Icon, PillButton } from "./ui";
+import { cloneCaptions, cloneScript } from "@/content/plant";
+import { seeded } from "./art/defs";
+import { Hyacinth } from "./art/Hyacinth";
+import { NarrationControls, useNarratedPlayer } from "./NarratedPlayer";
 
 const END_DAY = 240;
-const COLS = 24;
-const ROWS = 12;
-const CELLS = COLS * ROWS;
 const FINAL = 655360;
 
 // แบบจำลอง: เริ่ม 10 ต้น เพิ่มเป็น 2 เท่าทุก 15 วัน (Penfound & Earle, 1948)
 const countAt = (day: number) => 10 * 2 ** Math.floor(day / 15);
 
-// ลำดับช่องในบ่อ: แพผักตบโตออกจากจุดเริ่ม 10 จุดแบบเป็นกลุ่ม
-function buildOrder() {
-  const seeds = [
-    [3, 3], [8, 7], [14, 2], [19, 8], [5, 9], [11, 4], [21, 3], [16, 10], [2, 6], [9, 1],
-  ];
-  const dist = (c: number, r: number) =>
-    Math.min(...seeds.map(([sc, sr]) => Math.hypot(c - sc, (r - sr) * 1.6)));
-  const cells: { c: number; r: number; d: number }[] = [];
-  for (let r = 0; r < ROWS; r++)
-    for (let c = 0; c < COLS; c++) cells.push({ c, r, d: dist(c, r) + ((c * 7 + r * 13) % 5) * 0.15 });
-  return cells.sort((a, b) => a.d - b.d);
+// ---------- บ่อจำลอง: กอผักตบ 620 กอ แผ่ออกจากจุดตั้งต้น 3 จุด ----------
+const POND = "M60 58 C110 18 230 30 300 24 C362 20 394 70 386 120 C380 168 398 214 342 232 C282 252 200 236 140 245 C80 254 22 226 20 172 C18 122 22 88 60 58Z";
+const rnd = seeded(42);
+const BLADES = Array.from({ length: 160 }, () => {
+  const x = rnd() * 400;
+  const y = rnd() * 260;
+  return `M${x.toFixed(0)} ${y.toFixed(0)}l${(rnd() * 4 - 2).toFixed(1)} -6`;
+}).join("");
+const ORIGINS = [
+  [96, 84],
+  [300, 186],
+  [214, 64],
+];
+const ROSETTES: { x: number; y: number; s: number; r: number }[] = (() => {
+  const pts: { x: number; y: number; d: number; s: number; r: number }[] = [];
+  while (pts.length < 620) {
+    const x = 24 + rnd() * 352;
+    const y = 22 + rnd() * 220;
+    const nx = (x - 200) / 168;
+    const ny = (y - 132) / 106;
+    if (nx * nx + ny * ny > 1) continue;
+    const d = Math.min(...ORIGINS.map(([ox, oy]) => Math.hypot(ox - x, oy - y))) + rnd() * 46;
+    pts.push({ x, y, d, s: 13 + rnd() * 9, r: rnd() * 72 });
+  }
+  return pts.sort((a, b) => a.d - b.d);
+})();
+
+function Pond({ day }: { day: number }) {
+  const n = 10 * 2 ** (day / 15);
+  const k = Math.max(3, Math.round((ROSETTES.length * n) / FINAL));
+  return (
+    <svg
+      viewBox="0 0 400 260"
+      className="pond block w-full rounded-2xl"
+      role="img"
+      aria-label={`บ่อจำลอง ผักตบปกคลุม ${Math.round((k / ROSETTES.length) * 100)} เปอร์เซ็นต์ของผิวน้ำ`}
+    >
+      <rect width="400" height="260" fill="var(--shape-leaf-wash)" />
+      <path d={BLADES} stroke="var(--shape-leaf)" strokeWidth="1.4" strokeLinecap="round" opacity="0.7" />
+      <path d={POND} fill="var(--shape-leaf-deep)" transform="translate(0 5)" />
+      <path d={POND} fill="var(--shape-water-1)" />
+      <g fill="none" stroke="#fff" strokeOpacity="0.3" strokeWidth="1.5">
+        <ellipse cx="150" cy="150" rx="40" ry="14" />
+        <ellipse cx="150" cy="150" rx="70" ry="24" />
+        <ellipse cx="290" cy="90" rx="30" ry="10" />
+      </g>
+      <g stroke="var(--shape-stem)" strokeWidth="2" strokeLinecap="round">
+        {[
+          [24, 70],
+          [30, 64],
+          [378, 160],
+          [372, 170],
+          [60, 236],
+          [340, 30],
+        ].map(([x, y]) => (
+          <path key={`${x}-${y}`} d={`M${x} ${y} l-3 -22 M${x + 4} ${y} l2 -26 M${x + 8} ${y} l5 -20`} />
+        ))}
+      </g>
+      {ROSETTES.map((p, i) => (
+        <g key={i} className={i < k ? "r on" : "r"}>
+          <use
+            href="#hy-top"
+            x={(p.x - p.s / 2).toFixed(1)}
+            y={(p.y - p.s / 2).toFixed(1)}
+            width={p.s.toFixed(1)}
+            height={p.s.toFixed(1)}
+            transform={`rotate(${p.r.toFixed(0)} ${p.x.toFixed(1)} ${p.y.toFixed(1)})`}
+          />
+        </g>
+      ))}
+    </svg>
+  );
 }
 
-const ORDER = buildOrder();
-
-// สคริปต์บรรยาย: แต่ละช่วงเลื่อนวันไปถึงวันของคำบรรยายนั้น
-const SCRIPT: Seg[] = cloneCaptions.map((c, i) => ({
-  text: c.text,
-  p0: i === 0 ? 0 : cloneCaptions[i - 1].day,
-  p1: c.day,
-}));
+// ---------- ภาพประกอบ: ต้นแม่ → ไหล → ต้นลูก ----------
+export function StolonFigure() {
+  return (
+    <figure className="rounded-2xl bg-white bg-paper p-3">
+      <svg viewBox="0 0 400 170" className="block w-full" role="img" aria-label="ต้นแม่แตกไหลออกไปด้านข้าง ปลายไหลเกิดต้นลูก">
+        <rect y="96" width="400" height="74" fill="var(--shape-water-2)" rx="10" />
+        <path d="M0 96 H400" stroke="#fff" strokeOpacity="0.8" strokeWidth="2" />
+        <Hyacinth x={84} y={98} s={0.62} />
+        <path
+          className="g-draw"
+          pathLength={1}
+          d="M98 102 C150 128 250 128 306 102"
+          fill="none"
+          stroke="var(--shape-stolon)"
+          strokeWidth="5"
+          strokeLinecap="round"
+        />
+        <g className="g-pop" style={{ animationDelay: "1.6s" }}>
+          <Hyacinth x={316} y={98} s={0.45} />
+        </g>
+      </svg>
+      <figcaption className="flex justify-between px-2 pt-1 text-base text-ink-soft">
+        <span>ต้นแม่</span>
+        <span className="text-violet">ไหล (stolon)</span>
+        <span>ต้นลูก (clone)</span>
+      </figcaption>
+    </figure>
+  );
+}
 
 export default function CloneGrowth() {
   const [day, setDay] = useState(0);
   const player = useNarratedPlayer({
-    script: SCRIPT,
+    script: cloneScript,
     onValue: (v) => setDay(Math.round(v)),
   });
-  const narrating = player.status !== "idle";
 
   const count = countAt(day);
-  const filled = Math.max(1, Math.round((CELLS * count) / FINAL));
   const caption = [...cloneCaptions].reverse().find((c) => day >= c.day) ?? cloneCaptions[0];
   const months = Math.floor(day / 30);
   const rest = day % 30;
 
   return (
-    <div className="rounded-3xl border border-line bg-paper p-4 sm:p-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <dl className="flex gap-10">
-          <div>
-            <dt className="text-sm font-medium text-ink-soft">ผ่านไป</dt>
+    <div className="grid gap-6 rounded-[1.75rem] bg-paper-deep p-4 sm:p-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-start">
+      <div className="order-2 space-y-5 lg:order-1">
+        <StolonFigure />
+        <div className="rounded-2xl bg-white bg-paper p-4">
+          <GrowthChart day={day} />
+        </div>
+      </div>
+
+      <div className="order-1 lg:order-2">
+        <Pond day={day} />
+        <div className="mt-4">
+          <NarrationControls
+            player={player}
+            idleText={day === 0 ? "กดเล่นเพื่อดูการเพิ่มจำนวนพร้อมคำบรรยาย" : caption.text}
+          />
+        </div>
+        <dl className="grid grid-cols-2 gap-3">
+          <div className="rounded-2xl bg-white bg-paper p-4">
+            <dt className="text-base text-ink-soft">ผ่านไป</dt>
             <dd className="tabular font-serif text-3xl font-bold text-ink">
               {day < 30 ? `${day} วัน` : `${months} เดือน${rest ? ` ${rest} วัน` : ""}`}
             </dd>
           </div>
-          <div>
-            <dt className="text-sm font-medium text-ink-soft">จำนวนต้น</dt>
+          <div className="rounded-2xl bg-white bg-paper p-4">
+            <dt className="text-base text-ink-soft">จำนวนต้น</dt>
             <dd className="tabular font-serif text-3xl font-bold text-violet">{count.toLocaleString("th-TH")}</dd>
           </div>
         </dl>
-        <PillButton
-          onClick={() => {
-            player.stop();
-            player.seek(0);
-            setDay(0);
-          }}
-          disabled={day === 0}
-          label="เริ่มใหม่"
-        >
-          <Icon name="reset" />
-        </PillButton>
+        <label className="mt-4 block">
+          <span className="sr-only">เลื่อนดูวันที่</span>
+          <input
+            type="range"
+            min={0}
+            max={END_DAY}
+            value={day}
+            onChange={(e) => {
+              player.seek(0);
+              setDay(Number(e.target.value));
+            }}
+            className="w-full accent-[var(--violet)]"
+          />
+        </label>
+        <p className="mt-2 text-sm text-ink-soft">
+          จำลองจากผักตบ 10 ต้น เพิ่มเป็นสองเท่าทุก 15 วัน ครบ 8 เดือนได้ 655,360 ต้น (Penfound &amp; Earle, 1948)
+        </p>
       </div>
-
-      <div className="mt-4">
-        <NarrationControls player={player} subtitle />
-      </div>
-
-      <div className="mt-5 grid gap-5 lg:grid-cols-2">
-        <figure>
-          <svg
-            viewBox={`0 0 ${COLS * 20} ${ROWS * 20}`}
-            className="block w-full rounded-2xl bg-teal-wash"
-            role="img"
-            aria-label={`บ่อจำลอง ผักตบปกคลุม ${Math.round((filled / CELLS) * 100)} เปอร์เซ็นต์ของผิวน้ำ`}
-          >
-            {ORDER.slice(0, filled).map(({ c, r }) => (
-              <g key={`${c}-${r}`} className="clone-cell" transform={`translate(${c * 20 + 10} ${r * 20 + 10})`}>
-                <use href="#hy-top" x="-12" y="-12" width="24" height="24" />
-              </g>
-            ))}
-          </svg>
-          <figcaption className="mt-2 text-sm text-ink-soft">บ่อจำลอง: ผิวน้ำที่ถูกปกคลุม</figcaption>
-        </figure>
-        <GrowthChart day={day} />
-      </div>
-
-      <label className="mt-4 block">
-        <span className="sr-only">เลื่อนดูวันที่</span>
-        <input
-          type="range"
-          min={0}
-          max={END_DAY}
-          value={day}
-          onChange={(e) => {
-            player.seek(0);
-            setDay(Number(e.target.value));
-          }}
-          className="w-full"
-        />
-      </label>
-
-      {!narrating && <p className="mt-2 min-h-[3.6em] text-lg text-ink">{caption.text}</p>}
-      <p className="mt-2 text-sm text-ink-soft">
-        จำลองจากผักตบ 10 ต้น เพิ่มเป็นสองเท่าทุก 15 วัน ครบ 8 เดือนได้ 655,360 ต้น (Penfound &amp; Earle, 1948)
-      </p>
     </div>
   );
 }

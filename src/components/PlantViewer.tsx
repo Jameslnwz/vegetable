@@ -81,12 +81,12 @@ export default function PlantViewer() {
             >
               <Water />
 
-              {/* ก้านช่อดอกเก่าที่โค้งลง พร้อมผล (capsule) */}
-              <path d="M316 250 C 380 214, 470 206, 530 226" fill="none" stroke="url(#hy-stem)" strokeWidth="5" strokeLinecap="round" />
+              {/* ก้านช่อดอกที่โค้งลงพร้อมผล (capsule) */}
+              <path d="M316 250 C 380 214, 470 206, 530 226" fill="none" stroke="var(--shape-stem)" strokeWidth="5" strokeLinecap="round" />
               <g transform="translate(548 236) rotate(-58)">
-                <ellipse rx="13" ry="22" fill="#7fae7c" stroke="#3f6f4c" strokeWidth="2" />
-                <path d="M-11 -14 C-16 -30 -8 -38 0 -34 C8 -38 16 -30 11 -14" fill="#b9a9d6" opacity="0.75" />
-                <path d="M0 -20 V20 M-6 -18 C-8 0 -7 12 -4 20 M6 -18 C8 0 7 12 4 20" stroke="#3f6f4c" strokeWidth="1" opacity="0.5" fill="none" />
+                <ellipse rx="13" ry="22" fill="var(--shape-leaf-deep)" />
+                <path d="M0 -20 V20" stroke="var(--shape-leaf)" strokeWidth="3" strokeLinecap="round" opacity="0.8" />
+                <path d="M-11 -14 C-16 -30 -8 -38 0 -34 C8 -38 16 -30 11 -14" fill="var(--shape-petal)" opacity="0.9" />
               </g>
 
               {/* ช่อดอก */}
@@ -98,7 +98,7 @@ export default function PlantViewer() {
               <path
                 d="M300 306 C 340 300, 380 318, 430 326 S 500 330, 540 318"
                 fill="none"
-                stroke="#7a4fb0"
+                stroke="var(--shape-stolon)"
                 strokeWidth="6"
                 strokeLinecap="round"
               />
@@ -106,6 +106,7 @@ export default function PlantViewer() {
 
               {/* ต้นแม่: ราก กระเปาะ แผ่นใบ */}
               <Hyacinth x={300} y={304} s={2.3} />
+
               {/* จุดกด (hotspot) */}
               {parts.map((p) => (
                 <Hotspot

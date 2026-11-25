@@ -73,6 +73,10 @@ export default function HeroScene() {
             <stop offset="0.45" stopColor="var(--water-2)" />
             <stop offset="1" stopColor="var(--water-3)" />
           </linearGradient>
+          <linearGradient id="leafShade" x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0.5" stopColor="var(--shape-leaf)" />
+            <stop offset="0.5" stopColor="var(--shape-leaf-2)" />
+          </linearGradient>
         </defs>
 
         {/* น้ำ */}
@@ -83,22 +87,6 @@ export default function HeroScene() {
             fill="var(--water-1)"
           />
         </g>
-
-        {/* แสงระยิบบนผิวน้ำ */}
-        {[120, 300, 520, 760, 980, 1190, 1360].map((x, i) => (
-          <line
-            key={x}
-            x1={x}
-            x2={x + 46}
-            y1={SURFACE + 26 + (i % 3) * 22}
-            y2={SURFACE + 26 + (i % 3) * 22}
-            stroke="#ffffff"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            className="shimmer"
-            style={{ ["--d" as string]: `${i * 0.6}s` }}
-          />
-        ))}
 
         {/* กอผักตบ */}
         {ROSETTES.map((r) => (
@@ -151,7 +139,7 @@ function Rosette({ flower, bloomDelay }: { flower: boolean; bloomDelay: number }
     <Hyacinth
       x={0}
       y={4}
-      s={1.15}
+      s={1}
       flower={flower}
       spikeClass="spike"
       spikeStyle={{ ["--bob" as string]: `${bloomDelay / 900}s` }}

@@ -1,21 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { Noto_Sans_Thai, Noto_Serif_Thai } from "next/font/google";
+import { Anuphan, Playpen_Sans_Thai } from "next/font/google";
 import "./globals.css";
 import ArtDefs from "@/components/art/defs";
 
-// หัวข้อ: Noto Serif Thai (เซอริฟแบบนิตยสาร) · เนื้อความ: Noto Sans Thai (อ่านชัดทุกขนาด)
-const serif = Noto_Serif_Thai({
-  variable: "--font-display",
+// หัวข้อและเนื้อความ: Anuphan (ไทยไม่มีหัว อ่านชัดจากระยะไกล) · ป้ายสติกเกอร์: Playpen Sans Thai (ลายมือ)
+const text = Anuphan({
+  variable: "--font-text",
   subsets: ["thai", "latin"],
-  weight: ["500", "600", "700"],
   display: "swap",
 });
 
-const sans = Noto_Sans_Thai({
-  variable: "--font-text",
+const hand = Playpen_Sans_Thai({
+  variable: "--font-hand",
   subsets: ["thai", "latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["600"],
   display: "swap",
+  adjustFontFallback: false,
 });
 
 export const metadata: Metadata = {
@@ -25,12 +25,12 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0e2a21",
+  themeColor: "#5b2fd0",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="th" className={`${serif.variable} ${sans.variable} h-full antialiased`}>
+    <html lang="th" className={`${text.variable} ${hand.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <ArtDefs />
         {children}
