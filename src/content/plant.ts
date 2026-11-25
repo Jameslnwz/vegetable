@@ -386,7 +386,7 @@ export const benefits = {
 };
 
 export const members = [
-  { name: "นายจิรเมธ ฉิมฉุด", number: 25 },
+  { name: "นายจิรเมธ ฉิมสุด", number: 25 },
   { name: "นายภูตะวัน ยังดี", number: 26 },
   { name: "นายสาธิต พวงมาลี", number: 27 },
   { name: "นายภัทรพงศ์ ถวิลประภา", number: 28 },
