@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { parts, type PartId } from "@/content/plant";
+import { Hyacinth } from "./art/Hyacinth";
 
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 2.5;
@@ -80,55 +81,31 @@ export default function PlantViewer() {
             >
               <Water />
 
-              {/* ไหลและต้นลูก */}
-              <g fill="none" stroke="var(--violet)" strokeWidth="6" strokeLinecap="round">
-                <path d="M300 306 C 340 300, 380 318, 430 326 S 500 330, 540 320" />
-              </g>
-              <Plantlet cx={556} cy={318} />
-
-              {/* ราก */}
-              <g fill="none" stroke="var(--shape-root)" strokeWidth="2" strokeLinecap="round" opacity="0.85">
-                <path d="M300 304 C 290 340, 272 370, 282 420" />
-                <path d="M300 304 C 300 350, 310 390, 298 440" />
-                <path d="M300 304 C 312 340, 330 380, 322 430" />
-                <path d="M300 304 C 280 330, 252 350, 246 400" />
-                <path d="M300 304 C 320 330, 346 360, 352 410" />
-                <path d="M300 304 C 306 330, 318 360, 314 470" />
-                <path d="M300 304 C 286 340, 276 380, 268 462" />
-              </g>
-
-              {/* ก้านใบพอง (ทุ่น) */}
-              <g fill="var(--shape-float)" className="anim-bob">
-                <ellipse cx="230" cy="262" rx="12" ry="34" transform="rotate(-18 230 262)" />
-                <ellipse cx="300" cy="256" rx="13" ry="38" />
-                <ellipse cx="368" cy="262" rx="12" ry="34" transform="rotate(18 368 262)" />
-              </g>
-
-              {/* แผ่นใบ */}
-              <g fill="var(--shape-leaf)">
-                <ellipse cx="200" cy="198" rx="62" ry="30" transform="rotate(-28 200 198)" />
-                <ellipse cx="420" cy="198" rx="62" ry="30" transform="rotate(28 420 198)" />
-                <ellipse cx="310" cy="172" rx="70" ry="32" />
-              </g>
-              <g fill="none" stroke="var(--shape-stem)" strokeWidth="1.5" strokeLinecap="round" opacity="0.6">
-                <path d="M310 172 L310 206" />
-                <path d="M200 198 L240 186" />
-                <path d="M420 198 L380 186" />
+              {/* ก้านช่อดอกที่โค้งลงพร้อมผล (capsule) */}
+              <path d="M316 250 C 380 214, 470 206, 530 226" fill="none" stroke="var(--shape-stem)" strokeWidth="5" strokeLinecap="round" />
+              <g transform="translate(548 236) rotate(-58)">
+                <ellipse rx="13" ry="22" fill="var(--shape-leaf-deep)" />
+                <path d="M0 -20 V20" stroke="var(--shape-leaf)" strokeWidth="3" strokeLinecap="round" opacity="0.8" />
+                <path d="M-11 -14 C-16 -30 -8 -38 0 -34 C8 -38 16 -30 11 -14" fill="var(--shape-petal)" opacity="0.9" />
               </g>
 
               {/* ช่อดอก */}
-              <path d="M310 172 C 318 130, 330 100, 360 74" fill="none" stroke="var(--shape-stem)" strokeWidth="4" strokeLinecap="round" />
-              <g className="anim-bob" fill="var(--violet)" stroke="var(--violet)" strokeWidth="1.5">
-                <circle cx="342" cy="104" r="11" />
-                <circle cx="372" cy="90" r="11" />
-                <circle cx="356" cy="70" r="10" />
-                <circle cx="330" cy="130" r="9" fill="var(--shape-petal-2)" />
+              <g className="spike">
+                <use href="#hy-spike" x="268" y="-4" width="74" height="222" />
               </g>
-              <circle cx="356" cy="76" r="3.5" fill="var(--sun)" />
 
-              {/* ผลแคปซูล */}
-              <path d="M330 206 Q 430 190 500 228" fill="none" stroke="var(--shape-stem)" strokeWidth="3" strokeLinecap="round" />
-              <ellipse cx="548" cy="234" rx="14" ry="22" transform="rotate(-30 548 234)" fill="var(--shape-fruit)" />
+              {/* ไหลและต้นลูก */}
+              <path
+                d="M300 306 C 340 300, 380 318, 430 326 S 500 330, 540 318"
+                fill="none"
+                stroke="var(--shape-stolon)"
+                strokeWidth="6"
+                strokeLinecap="round"
+              />
+              <Hyacinth x={552} y={314} s={0.55} />
+
+              {/* ต้นแม่: ราก กระเปาะ แผ่นใบ */}
+              <Hyacinth x={300} y={304} s={2.3} />
 
               {/* จุดกด (hotspot) */}
               {parts.map((p) => (
@@ -234,16 +211,6 @@ function Water() {
         strokeWidth="2"
         opacity="0.6"
       />
-    </g>
-  );
-}
-
-function Plantlet({ cx, cy }: { cx: number; cy: number }) {
-  return (
-    <g className="anim-rise" fill="var(--shape-leaf-deep)">
-      <ellipse cx={cx - 14} cy={cy - 10} rx="18" ry="9" transform={`rotate(-30 ${cx - 14} ${cy - 10})`} />
-      <ellipse cx={cx + 12} cy={cy - 12} rx="18" ry="9" transform={`rotate(30 ${cx + 12} ${cy - 12})`} />
-      <ellipse cx={cx} cy={cy - 2} rx="20" ry="10" />
     </g>
   );
 }

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Anuphan, Playpen_Sans_Thai } from "next/font/google";
 import "./globals.css";
+import ArtDefs from "@/components/art/defs";
 
 // หัวข้อและเนื้อความ: Anuphan (ไทยไม่มีหัว อ่านชัดจากระยะไกล) · ป้ายสติกเกอร์: Playpen Sans Thai (ลายมือ)
 const text = Anuphan({
@@ -30,7 +31,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="th" className={`${text.variable} ${hand.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <ArtDefs />
+        {children}
+      </body>
     </html>
   );
 }

@@ -65,7 +65,10 @@ export type IconName =
   | "coin"
   | "leaf"
   | "sprout"
-  | "clock";
+  | "clock"
+  | "speaker"
+  | "fast"
+  | "mute";
 
 const icons: Record<IconName, ReactNode> = {
   play: <path d="M7 4v16l13-8z" />,
@@ -110,6 +113,24 @@ const icons: Record<IconName, ReactNode> = {
       <path d="M12 21v-9" />
       <path d="M12 12c0-4-3-6-7-6 0 4 3 6 7 6z" />
       <path d="M12 14c0-3 2.5-5 6-5 0 3-2.5 5-6 5z" />
+    </>
+  ),
+  fast: (
+    <>
+      <path d="M4 6l7 6-7 6z" />
+      <path d="M13 6l7 6-7 6z" />
+    </>
+  ),
+  speaker: (
+    <>
+      <path d="M4 9v6h4l5 4V5L8 9z" />
+      <path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" />
+    </>
+  ),
+  mute: (
+    <>
+      <path d="M4 9v6h4l5 4V5L8 9z" />
+      <path d="m17 9 5 6M22 9l-5 6" />
     </>
   ),
   clock: (
