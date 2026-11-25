@@ -2,6 +2,7 @@
 
 import { useRef, useState, type PointerEvent } from "react";
 import { cloneCaptions, cloneScript } from "@/content/plant";
+import { clipSrc } from "@/lib/say-text";
 import { seeded } from "./art/defs";
 import { Hyacinth } from "./art/Hyacinth";
 import { NarrationControls, useNarratedPlayer } from "./NarratedPlayer";
@@ -119,7 +120,7 @@ export function StolonFigure() {
 export default function CloneGrowth() {
   const [day, setDay] = useState(0);
   const player = useNarratedPlayer({
-    script: cloneScript,
+    script: cloneScript.map((s, i) => ({ ...s, src: clipSrc("clone", i) })),
     onValue: (v) => setDay(Math.round(v)),
   });
 

@@ -9,6 +9,7 @@ import {
   maleNarration,
   maleSteps,
 } from "@/content/plant";
+import { clipSrc } from "@/lib/say-text";
 import { NarrationControls, useNarratedPlayer, type Seg } from "./NarratedPlayer";
 import { Icon, PillButton } from "./ui";
 
@@ -376,8 +377,11 @@ export function Gametogenesis() {
   const lines = sex === "m" ? maleNarration : femaleNarration;
   const last = scenes.length - 1;
 
-  const script: Seg[] = lines.flatMap((group, k) => group.map((text, j) => ({ text, on: j === 0 ? () => setStep(k) : undefined })));
+  const clipGroup = sex === "m" ? "male" : "female";
   const firstLine = (k: number) => lines.slice(0, k).reduce((a, l) => a + l.length, 0);
+  const script: Seg[] = lines.flatMap((group, k) =>
+    group.map((text, j) => ({ text, src: clipSrc(clipGroup, firstLine(k) + j), on: j === 0 ? () => setStep(k) : undefined })),
+  );
   const player = useNarratedPlayer({ script });
 
   const go = (k: number) => {
@@ -594,7 +598,10 @@ function FertilizationScene({ t }: { t: number }) {
 
 export function DoubleFertilization() {
   const [t, setT] = useState(0);
-  const player = useNarratedPlayer({ script: fertilizationScript, onValue: (v) => setT(v) });
+  const player = useNarratedPlayer({
+    script: fertilizationScript.map((s, i) => ({ ...s, src: clipSrc("fertilization", i) })),
+    onValue: (v) => setT(v),
+  });
   const started = player.status !== "idle" || t > 0;
   const cap = fertilizationSteps[phaseOf(t)];
 

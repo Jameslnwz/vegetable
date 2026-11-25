@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { flowerScript, flowerTimeline } from "@/content/plant";
+import { clipSrc } from "@/lib/say-text";
 import { NarrationControls, useNarratedPlayer } from "./NarratedPlayer";
 
 // จากดอกหนึ่งวันสู่เมล็ดในตะกอน: ฉากเดียวที่เปลี่ยนตามช่วงเวลา (ท้องฟ้า ดอก ก้านช่อ เมล็ด น้ำ)
@@ -103,7 +104,7 @@ export default function FlowerTimeline() {
   const stage = flowerTimeline[p];
   const last = flowerTimeline.length - 1;
   const player = useNarratedPlayer({
-    script: flowerScript.map((s) => ({ text: s.text, on: s.p != null ? () => setP(s.p!) : undefined })),
+    script: flowerScript.map((s, i) => ({ text: s.text, src: clipSrc("flower", i), on: s.p != null ? () => setP(s.p!) : undefined })),
   });
   const go = (n: number) => {
     player.seek(flowerScript.findIndex((s) => s.p === n));

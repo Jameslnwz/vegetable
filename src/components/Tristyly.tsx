@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { morphs, tristylyScript, type Morph } from "@/content/plant";
+import { clipSrc } from "@/lib/say-text";
 import { PETAL } from "./art/defs";
 import { NarrationControls, useNarratedPlayer, type Seg } from "./NarratedPlayer";
 import { PillButton } from "./ui";
@@ -123,8 +124,9 @@ export default function Tristyly() {
   const [arrows, setArrows] = useState<Level[] | null>(null);
   const shown = arrows ?? (mode === "all" ? LEVELS : [morphs[mode].stigma]);
 
-  const script: Seg[] = tristylyScript.map((s) => ({
+  const script: Seg[] = tristylyScript.map((s, i) => ({
     text: s.text,
+    src: clipSrc("tristyly", i),
     on: () => {
       setMode(s.mode);
       setArrows(s.arrows ?? null);
