@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { parts, type PartId } from "@/content/plant";
 
 const MIN_ZOOM = 1;
@@ -14,6 +14,20 @@ export default function PlantViewer() {
   const [showLabels, setShowLabels] = useState(false);
 
   const current = parts.find((p) => p.id === selected) ?? parts[0];
+  const frameRef = useRef<HTMLDivElement>(null);
+
+  // เมื่อซูมหรือเลือกส่วนใหม่ เลื่อนภาพให้ส่วนที่เลือกอยู่กลางกรอบ
+  useEffect(() => {
+    const frame = frameRef.current;
+    if (!frame) return;
+    const id = requestAnimationFrame(() => {
+      const left = (current.anchor.x / 720) * frame.scrollWidth - frame.clientWidth / 2;
+      const top = (current.anchor.y / 520) * frame.scrollHeight - frame.clientHeight / 2;
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      frame.scrollTo({ left, top, behavior: reduce ? "auto" : "smooth" });
+    });
+    return () => cancelAnimationFrame(id);
+  }, [zoom, current]);
 
   const zoomIn = () => setZoom((z) => Math.min(MAX_ZOOM, +(z + STEP).toFixed(2)));
   const zoomOut = () => setZoom((z) => Math.max(MIN_ZOOM, +(z - STEP).toFixed(2)));
@@ -50,10 +64,13 @@ export default function PlantViewer() {
           </button>
         </div>
 
-        <div className="relative overflow-auto rounded-2xl border border-line bg-paper-deep">
+        <div
+          ref={frameRef}
+          className="relative max-h-[70vh] overflow-auto overscroll-contain rounded-2xl border border-line bg-paper-deep"
+        >
           <div
-            className="transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] origin-center"
-            style={{ transform: `scale(${zoom})`, transformOrigin: "center" }}
+            className="transition-[width] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+            style={{ width: `${zoom * 100}%` }}
           >
             <svg
               viewBox="0 0 720 520"
@@ -64,13 +81,13 @@ export default function PlantViewer() {
               <Water />
 
               {/* ไหลและต้นลูก */}
-              <g fill="none" stroke="var(--teal)" strokeWidth="6" strokeLinecap="round">
+              <g fill="none" stroke="var(--violet)" strokeWidth="6" strokeLinecap="round">
                 <path d="M300 306 C 340 300, 380 318, 430 326 S 500 330, 540 320" />
               </g>
               <Plantlet cx={556} cy={318} />
 
               {/* ราก */}
-              <g fill="none" stroke="var(--ink-soft)" strokeWidth="2" strokeLinecap="round">
+              <g fill="none" stroke="#3d2f4a" strokeWidth="2" strokeLinecap="round" opacity="0.85">
                 <path d="M300 304 C 290 340, 272 370, 282 420" />
                 <path d="M300 304 C 300 350, 310 390, 298 440" />
                 <path d="M300 304 C 312 340, 330 380, 322 430" />

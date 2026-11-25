@@ -3,17 +3,18 @@
 import { useEffect, useState } from "react";
 
 const chapters = [
-  { id: "identity", label: "ข้อมูล" },
+  { id: "identity", label: "พรรณไม้" },
   { id: "structure", label: "โครงสร้าง" },
   { id: "problem", label: "ปัญหา" },
-  { id: "uses", label: "ใช้ประโยชน์" },
-  { id: "herbal", label: "สมุนไพร" },
+  { id: "reproduction", label: "การสืบพันธุ์" },
+  { id: "guide", label: "คู่มือแปรรูป" },
+  { id: "benefits", label: "ประโยชน์" },
   { id: "credits", label: "ผู้จัดทำ" },
 ];
 
 export default function ChapterNav() {
   const [progress, setProgress] = useState(0);
-  const [active, setActive] = useState<string>("identity");
+  const [active, setActive] = useState<string>("");
 
   useEffect(() => {
     const onScroll = () => {
@@ -41,12 +42,12 @@ export default function ChapterNav() {
   }, []);
 
   return (
-    <div className="sticky top-0 z-30 border-b border-line bg-paper/90 backdrop-blur-sm">
+    <div className="sticky top-0 z-30 border-b border-line bg-paper/95">
       <nav
         aria-label="หัวข้อในหน้า"
-        className="mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-4 py-3 sm:px-6"
+        className="mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-4 py-2 sm:px-6"
       >
-        <a href="#top" className="mr-4 shrink-0 font-serif text-lg font-bold text-ink">
+        <a href="#top" className="mr-3 shrink-0 text-lg font-extrabold text-ink">
           Vegetable
         </a>
         {chapters.map((c) => (
@@ -54,7 +55,7 @@ export default function ChapterNav() {
             key={c.id}
             href={`#${c.id}`}
             aria-current={active === c.id ? "true" : undefined}
-            className={`shrink-0 rounded-full px-3 py-1.5 text-base transition-colors duration-200 ${
+            className={`flex min-h-11 shrink-0 items-center rounded-full px-3 text-base transition-colors duration-200 ${
               active === c.id ? "bg-teal text-paper" : "text-ink-soft hover:text-teal"
             }`}
           >
@@ -62,11 +63,8 @@ export default function ChapterNav() {
           </a>
         ))}
       </nav>
-      <div className="h-0.5 bg-transparent">
-        <div
-          className="h-full origin-left bg-violet"
-          style={{ transform: `scaleX(${progress})` }}
-        />
+      <div className="h-0.5">
+        <div className="h-full origin-left bg-violet" style={{ transform: `scaleX(${progress})` }} />
       </div>
     </div>
   );
