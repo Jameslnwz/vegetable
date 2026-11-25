@@ -1,0 +1,142 @@
+@import "tailwindcss";
+
+/*
+ * Field-notebook palette: cream paper, deep water-teal ink,
+ * hyacinth violet for the one accent that matters, a sun-yellow dot for the flower.
+ */
+:root {
+  --paper: #f4efe3;
+  --paper-deep: #ebe3d0;
+  --ink: #1e2b2e;
+  --ink-soft: #4a5a5c; /* 7:1 on paper */
+  --teal: #1f5c63;
+  --teal-wash: #d6e6e1;
+  --violet: #6b4c9a;
+  --violet-wash: #e7dff2;
+  --sun: #e0b23a;
+  --line: #c9bfa6;
+  --danger: #8a3b2e;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-deep: var(--paper-deep);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-teal: var(--teal);
+  --color-teal-wash: var(--teal-wash);
+  --color-violet: var(--violet);
+  --color-violet-wash: var(--violet-wash);
+  --color-sun: var(--sun);
+  --color-line: var(--line);
+  --color-danger: var(--danger);
+  --font-sans: var(--font-body), system-ui, sans-serif;
+  --font-serif: var(--font-display), Georgia, serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+  scrollbar-color: var(--teal) var(--paper-deep);
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 1.125rem;
+  line-height: 1.75;
+}
+
+::selection {
+  background: var(--violet-wash);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 3px solid var(--violet);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-serif);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+/* Wave drifting on the water surface */
+@keyframes drift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-160px);
+  }
+}
+
+/* One authored entrance for the plant: rises out of the water */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Gentle bob for the floating part */
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    r: 22;
+    opacity: 0.55;
+  }
+  100% {
+    r: 46;
+    opacity: 0;
+  }
+}
+
+.anim-wave {
+  animation: drift 6s linear infinite;
+}
+
+.anim-rise {
+  animation: rise 1.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.anim-bob {
+  animation: bob 5s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.anim-pulse {
+  animation: pulse-ring 1.8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .anim-wave,
+  .anim-rise,
+  .anim-bob,
+  .anim-pulse {
+    animation: none;
+  }
+}
