@@ -5,7 +5,8 @@ import { SPEEDS, hush, speak, useNarrationSettings } from "@/lib/narration";
 import { Icon, PillButton } from "./ui";
 
 // สคริปต์บรรยาย: แต่ละช่วงมีข้อความ และอาจเลื่อนค่า (เช่น วันที่) จาก p0 ไป p1 ระหว่างช่วง
-export type Seg = { text: string; ms?: number; p0?: number; p1?: number; on?: () => void };
+// src = ไฟล์เสียงที่สร้างไว้ล่วงหน้า (ดู clipSrc); ไม่มีหรือเล่นไม่ได้จะใช้เสียงของเบราว์เซอร์
+export type Seg = { text: string; src?: string; ms?: number; p0?: number; p1?: number; on?: () => void };
 export type Status = "idle" | "playing" | "paused" | "ended";
 
 const readMs = (t: string) => Math.max(3600, t.length * 78);
@@ -76,12 +77,17 @@ export function useNarratedPlayer(opts: Options) {
       let animDone = false;
       let voiced = !voice;
       if (voice) {
-        speak(seg.text, speed, (failed) => {
-          if (id !== token.current) return;
-          if (failed) avRef.current.fail();
-          voiced = true;
-          if (animDone) next();
-        });
+        speak(
+          seg.text,
+          speed,
+          (failed) => {
+            if (id !== token.current) return;
+            if (failed) avRef.current.fail();
+            voiced = true;
+            if (animDone) next();
+          },
+          seg.src,
+        );
       }
       const t0 = performance.now();
       const frame = (now: number) => {

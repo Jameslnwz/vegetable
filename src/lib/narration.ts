@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useSyncExternalStore } from "react";
+import { sayText } from "./say-text";
 
 // ตั้งค่าเสียงบรรยายและความเร็ว ใช้ร่วมกันทุกกราฟิกที่เล่นเองได้
 export const SPEEDS = [1, 1.25, 1.5, 1.75, 2] as const;
@@ -87,29 +88,44 @@ function bindVoices() {
   }
 }
 
-// แปลงข้อความให้เครื่องอ่านภาษาไทยออกเสียงถูก
-export const sayText = (t: string) =>
-  t
-    .replace(/(\d)n\s*=\s*(\d+)/g, "$1 เอ็น เท่ากับ $2")
-    .replace(/(^|[^A-Za-z0-9])n\s*=\s*(\d+)/g, "$1เอ็น เท่ากับ $2")
-    .replace(/(\d)\s*[–-]\s*(\d)/g, "$1 ถึง $2")
-    .replace(/→/g, " ได้ ")
-    .replace(/~/g, "ประมาณ ")
-    .replace(/มม\./g, "มิลลิเมตร")
-    .replace(/ซม\./g, "เซนติเมตร")
-    .replace(/[()·:]/g, " ");
-
 let sayId = 0;
+let clip: HTMLAudioElement | null = null;
 
-// อ่านออกเสียง จบแล้วเรียก done(failed) คืนค่า id ไว้ใช้เทียบ
-export function speak(text: string, speed: number, done: (failed: boolean) => void) {
-  const my = ++sayId;
-  let fin = false;
-  const end = (failed: boolean) => {
-    if (fin || my !== sayId) return;
-    fin = true;
-    done(failed);
+// เล่นไฟล์เสียงที่สร้างไว้ล่วงหน้า ถ้าเล่นไม่ได้ (ไม่มีไฟล์/ถูกบล็อก) จะเรียก fallback
+function playClip(src: string, speed: number, my: number, end: (failed: boolean) => void, fallback: () => void) {
+  if (typeof Audio === "undefined") return fallback();
+  const a = new Audio(src);
+  clip = a;
+  a.playbackRate = Math.min(2, speed);
+  let settled = false;
+  const settle = () => {
+    settled = true;
+    if (clip === a) clip = null;
   };
+  a.onended = () => {
+    if (settled) return;
+    settle();
+    end(false);
+  };
+  const failed = () => {
+    if (settled) return;
+    settle();
+    if (my === sayId) fallback();
+  };
+  a.onerror = failed;
+  a.play().catch(failed);
+  // กันค้าง: ถ้าไฟล์โหลดแล้วแต่ไม่จบตามเวลา ให้ไปข้อถัดไป
+  a.addEventListener("loadedmetadata", () => {
+    setTimeout(() => {
+      if (settled) return;
+      settle();
+      end(false);
+    }, ((a.duration || 0) / a.playbackRate + 3) * 1000);
+  });
+}
+
+// อ่านด้วยเสียงของเบราว์เซอร์ (ใช้เมื่อไม่มีไฟล์เสียง)
+function speakByVoice(text: string, speed: number, end: (failed: boolean) => void) {
   const s = synth();
   if (!s) {
     setTimeout(() => end(true), 0);
@@ -132,8 +148,27 @@ export function speak(text: string, speed: number, done: (failed: boolean) => vo
   setTimeout(() => end(false), Math.max(4000, (text.length * 170) / speed + 3000));
 }
 
+// อ่านออกเสียง จบแล้วเรียก done(failed) ถ้ามี src จะเล่นไฟล์ก่อน
+export function speak(text: string, speed: number, done: (failed: boolean) => void, src?: string) {
+  const my = ++sayId;
+  let fin = false;
+  const end = (failed: boolean) => {
+    if (fin || my !== sayId) return;
+    fin = true;
+    done(failed);
+  };
+  if (src) playClip(src, speed, my, end, () => speakByVoice(text, speed, end));
+  else speakByVoice(text, speed, end);
+}
+
 export function hush() {
   sayId++;
+  try {
+    clip?.pause();
+  } catch {
+    /* ข้าม */
+  }
+  clip = null;
   try {
     synth()?.cancel();
   } catch {
