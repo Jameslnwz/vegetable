@@ -16,6 +16,21 @@
   --sun: #e0b23a;
   --line: #c9bfa6;
   --danger: #8a3b2e;
+
+  /* Bands: the deep water colour owns one region; leaf and sun tint the rest */
+  --teal-deep: #154247;
+  --on-deep: #f4efe3;
+  --on-deep-soft: #bcd6cf; /* ~7:1 on teal-deep */
+  --leaf: #4d7a3c;
+  --leaf-wash: #e2edd8;
+  --sun-wash: #f6ead0;
+  --sun-ink: #7a5a10;
+  --violet-band: #ece5f3;
+  --water-1: #a9cfc7;
+  --water-2: #5f9a97;
+  --water-3: #1f5c63;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @theme inline {
@@ -30,6 +45,14 @@
   --color-sun: var(--sun);
   --color-line: var(--line);
   --color-danger: var(--danger);
+  --color-teal-deep: var(--teal-deep);
+  --color-on-deep: var(--on-deep);
+  --color-on-deep-soft: var(--on-deep-soft);
+  --color-leaf: var(--leaf);
+  --color-leaf-wash: var(--leaf-wash);
+  --color-sun-wash: var(--sun-wash);
+  --color-sun-ink: var(--sun-ink);
+  --color-violet-band: var(--violet-band);
   --font-sans: var(--font-th-sarabun), Sarabun, system-ui, sans-serif;
   --font-serif: var(--font-th-sarabun), Sarabun, system-ui, sans-serif;
   /* TH Sarabun New has a small x-height, so each type step is scaled up ~1.25x */
@@ -53,7 +76,10 @@ html {
 }
 
 body {
-  background: var(--paper);
+  background-color: var(--paper);
+  /* field-notebook dot grid, barely there */
+  background-image: radial-gradient(rgb(30 43 46 / 0.07) 1px, transparent 1.2px);
+  background-size: 28px 28px;
   color: var(--ink);
   font-family: var(--font-sans);
   font-size: 1.4rem;
@@ -194,6 +220,206 @@ h3 {
 input[type="range"] {
   height: 2.75rem;
   cursor: pointer;
+}
+
+/* ---------- Hero water scene ---------- */
+@keyframes drift-in {
+  from {
+    opacity: 0;
+    transform: translateX(90px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes bloom {
+  from {
+    transform: scale(0) rotate(-40deg);
+  }
+  to {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes ripple {
+  from {
+    transform: scale(0.08);
+    opacity: 0.75;
+  }
+  to {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  50% {
+    opacity: 0.85;
+    transform: translateX(12px);
+  }
+}
+
+@keyframes sway {
+  0%,
+  100% {
+    transform: rotate(-2.5deg);
+  }
+  50% {
+    transform: rotate(2.5deg);
+  }
+}
+
+@keyframes underline {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.rosette {
+  animation: drift-in 900ms var(--ease-out) both;
+  animation-delay: var(--d, 0ms);
+}
+
+.rosette-bob {
+  animation: bob 6s ease-in-out infinite;
+  animation-delay: var(--bob, 0s);
+  transform-box: fill-box;
+  transform-origin: center bottom;
+}
+
+.spike {
+  animation: sway 7s ease-in-out infinite;
+  animation-delay: var(--bob, 0s);
+  transform-box: fill-box;
+  transform-origin: center bottom;
+}
+
+.bloom {
+  animation: bloom 700ms var(--ease-out) both;
+  animation-delay: var(--bd, 900ms);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.ripple {
+  animation: ripple 1.6s var(--ease-out) forwards;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.shimmer {
+  animation: shimmer 4.5s ease-in-out infinite;
+  animation-delay: var(--d, 0s);
+}
+
+.hand-underline {
+  stroke-dasharray: 1;
+  animation: underline 1s var(--ease-out) 700ms both;
+}
+
+/* ---------- Reveal on scroll (only for content that starts below the fold) ---------- */
+.reveal-heading {
+  transition:
+    opacity 700ms var(--ease-out),
+    transform 700ms var(--ease-out),
+    filter 700ms var(--ease-out);
+}
+
+.reveal-pending .reveal-heading {
+  opacity: 0;
+  transform: translateY(18px);
+  filter: blur(6px);
+}
+
+/* Chapter ornaments are inked in: each stroke draws itself */
+.ornament [pathLength] {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 1300ms var(--ease-out) 120ms;
+}
+
+.reveal-pending .ornament [pathLength] {
+  stroke-dashoffset: 1;
+}
+
+[data-stagger] > * {
+  transition:
+    opacity 600ms var(--ease-out),
+    transform 600ms var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 80ms + 150ms);
+}
+
+.reveal-pending [data-stagger] > * {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.timeline-line {
+  transform-origin: top;
+  transition: transform 1400ms var(--ease-out) 100ms;
+}
+
+.reveal-pending .timeline-line {
+  transform: scaleY(0);
+}
+
+/* Loops rest when their region is off screen or the tab is hidden */
+.loop-paused *,
+.page-hidden * {
+  animation-play-state: paused !important;
+}
+
+/* Press feedback for every button: the smallest change that confirms the tap */
+button:not(:disabled):active,
+a.press:active {
+  transform: scale(0.97);
+}
+
+button,
+a.press {
+  transition-property: color, background-color, border-color, transform, box-shadow;
+  transition-duration: 200ms;
+  transition-timing-function: var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rosette,
+  .rosette-bob,
+  .spike,
+  .bloom,
+  .shimmer,
+  .hand-underline {
+    animation: none;
+  }
+  .ripple {
+    animation-duration: 600ms;
+    animation-name: fade-out;
+  }
+  .reveal-heading,
+  [data-stagger] > *,
+  .timeline-line,
+  .ornament [pathLength] {
+    transition: none;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
