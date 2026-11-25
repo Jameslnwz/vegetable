@@ -5,7 +5,7 @@ import { SPEEDS, hush, speak, useNarrationSettings } from "@/lib/narration";
 import { Icon, PillButton } from "./ui";
 
 // สคริปต์บรรยาย: แต่ละช่วงมีข้อความ และอาจเลื่อนค่า (เช่น วันที่) จาก p0 ไป p1 ระหว่างช่วง
-export type Seg = { text: string; ms?: number; p0?: number; p1?: number };
+export type Seg = { text: string; ms?: number; p0?: number; p1?: number; on?: () => void };
 export type Status = "idle" | "playing" | "paused" | "ended";
 
 const readMs = (t: string) => Math.max(3600, t.length * 78);
@@ -67,6 +67,7 @@ export function useNarratedPlayer(opts: Options) {
       setSegMs(ms);
       set("playing");
       onSegment?.(i);
+      seg.on?.();
 
       const next = () => {
         if (id === token.current) startRef.current(i + 1);
@@ -154,15 +155,17 @@ export function useNarratedPlayer(opts: Options) {
 
 export type Player = ReturnType<typeof useNarratedPlayer>;
 
-// ปุ่มเล่น แถบความคืบหน้า ความเร็ว และเสียงบรรยาย
+// กล่องคำบรรยาย (มีแถบความคืบหน้า) และแถวปุ่ม: เล่น · ความเร็ว (กดวน) · เสียงบรรยาย
 export function NarrationControls({
   player,
   idleLabel = "เล่นพร้อมคำบรรยาย",
-  subtitle = false,
+  idleText,
+  children,
 }: {
   player: Player;
   idleLabel?: string;
-  subtitle?: boolean;
+  idleText?: string;
+  children?: React.ReactNode;
 }) {
   const { status, index, segMs, total, av } = player;
   const bar = useRef<HTMLSpanElement>(null);
@@ -181,42 +184,43 @@ export function NarrationControls({
       el.style.transition = "none";
     } else {
       el.style.transition = "none";
-      el.style.width = status === "ended" ? "100%" : "0";
+      el.style.width = "0";
     }
   }, [status, index, segMs]);
 
   const label =
     status === "playing" ? "หยุด" : status === "paused" ? "เล่นต่อ" : status === "ended" ? "เล่นอีกครั้ง" : idleLabel;
+  const live = status === "playing" || status === "paused";
+  const text = live || status === "ended" ? player.text : idleText;
+  const nextSpeed = SPEEDS[(SPEEDS.indexOf(av.speed) + 1) % SPEEDS.length];
 
   return (
     <div className="narration">
-      {subtitle && status !== "idle" && (
-        <p key={index} className="subtitle anim-rise" aria-live="polite">
-          {player.text}
-        </p>
+      {text && (
+        <div className={`subtitle ${live ? "is-live" : ""}`}>
+          {live && (
+            <span className="tabular subtitle-count" aria-hidden="true">
+              {index + 1}/{total}
+            </span>
+          )}
+          <p key={live ? index : -1} className={live ? "anim-rise-sm" : ""} aria-live="polite">
+            {text}
+          </p>
+          <span className="sbar-track" aria-hidden="true">
+            <span ref={bar} className="sbar-fill" />
+          </span>
+        </div>
       )}
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        {children}
         <PillButton tone="solid" onClick={player.toggle}>
           <Icon name={status === "playing" ? "pause" : "play"} />
           {label}
         </PillButton>
-        <span className="sbar-track" aria-hidden="true">
-          <span ref={bar} className="sbar-fill" />
-        </span>
-        {status !== "idle" && (
-          <span className="tabular text-base text-ink-soft" aria-hidden="true">
-            {index + 1}/{total}
-          </span>
-        )}
-      </div>
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        <div role="group" aria-label="ความเร็วในการเล่น" className="flex flex-wrap gap-2">
-          {SPEEDS.map((s) => (
-            <PillButton key={s} pressed={av.speed === s} onClick={() => av.setSpeed(s)} label={`ความเร็ว ${s} เท่า`}>
-              <span className="tabular">{s}x</span>
-            </PillButton>
-          ))}
-        </div>
+        <PillButton onClick={() => av.setSpeed(nextSpeed)} label={`ความเร็ว ${av.speed} เท่า กดเพื่อเปลี่ยนเป็น ${nextSpeed} เท่า`}>
+          <Icon name="fast" />
+          <span className="tabular min-w-[3.2ch] font-semibold">{av.speed}x</span>
+        </PillButton>
         <PillButton pressed={av.voice} onClick={() => av.setVoice(!av.voice)}>
           <Icon name={av.voice ? "speaker" : "mute"} />
           เสียงบรรยาย: {av.voice ? "เปิด" : "ปิด"}

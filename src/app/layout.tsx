@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Noto_Sans_Thai, Noto_Serif_Thai } from "next/font/google";
 import "./globals.css";
+import ArtDefs from "@/components/art/defs";
 
 // หัวข้อ: Noto Serif Thai (เซอริฟแบบนิตยสาร) · เนื้อความ: Noto Sans Thai (อ่านชัดทุกขนาด)
 const serif = Noto_Serif_Thai({
@@ -30,7 +31,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="th" className={`${serif.variable} ${sans.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <ArtDefs />
+        {children}
+      </body>
     </html>
   );
 }

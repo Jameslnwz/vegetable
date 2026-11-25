@@ -67,6 +67,7 @@ export type IconName =
   | "sprout"
   | "clock"
   | "speaker"
+  | "fast"
   | "mute";
 
 const icons: Record<IconName, ReactNode> = {
@@ -112,6 +113,12 @@ const icons: Record<IconName, ReactNode> = {
       <path d="M12 21v-9" />
       <path d="M12 12c0-4-3-6-7-6 0 4 3 6 7 6z" />
       <path d="M12 14c0-3 2.5-5 6-5 0 3-2.5 5-6 5z" />
+    </>
+  ),
+  fast: (
+    <>
+      <path d="M4 6l7 6-7 6z" />
+      <path d="M13 6l7 6-7 6z" />
     </>
   ),
   speaker: (
